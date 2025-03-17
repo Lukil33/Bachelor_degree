@@ -4,46 +4,45 @@
 #include <algorithm>
 using namespace std;
 
-double sottocres_ric(vector<int> vec, vector<int>& value, int elem);
+void insert_in_order(vector<pair<int,int>>& DP, pair<int,int> elem);
 
 int main(){
-    vector<int> vec = {20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    vector<int> value = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    vector<pair<int,int>> DP = {{9,14},{5,10},{3,4},{1,1}};
+    pair<int,int> elem = {7,11};
 
-    cout<< sottocres_ric(vec, value, vec.size()-1)<<endl;
+    insert_in_order(DP, elem);
+
+    cout<<"Vec: ";
+    for(pair<int,int> p: DP){
+        cout<<" - "<<p.first<<"."<<p.second;
+    }
+    cout<<endl;
 
     return 0;
 }
 
-int findBigger(vector<int> vec, vector<int>& value, int elem, int count, int max_res){
-    if(count >= (int)vec.size()){
-        return max_res;
-    }else if(vec[elem] < vec[count] && max_res < value[count]){
-        max_res = value[count];
-    }
-    cout<<elem<<" - "<<count<<endl;
-    return findBigger(vec,value,elem,count+1,max_res);
-}
-
-double sottocres_ric(vector<int> vec, vector<int>& value, int elem){
-    if(elem < 0){
-        
-        /*cout<<"Val: ";
-        for(int i=0; i<(int)value.size(); i++){
-            cout<<value[i]<<" ";
-        }
-        cout<<endl;*/
-
-        return *max_element(value.begin(), value.end());
+void insert_in_order(vector<pair<int,int>>& DP, pair<int,int> elem){
+    if(DP.empty()){
+        //Se DP è vuoto semplicemente inserire elem
+        DP.push_back(elem);
     }else{
-        value[elem] = vec[elem] + findBigger(vec,value,elem,elem+1,0);
+        //Se DP ha degli elementi inserisco elem in modo ordinato
+        int low = 0, high = DP.size()-1;
 
-        /*cout<<"Value element "<<elem<<": ";
-        for(int i=0; i<(int)value.size(); i++){
-            cout<<value[i]<<" ";
+        while(low <= high){
+            int mid = low + (high - low) / 2;
+
+            if (DP[mid].second >= elem.second){
+                low = mid + 1;
+            }else{
+                high = mid - 1;
+            }
         }
-        cout<<endl;*/
-
-        return sottocres_ric(vec,value,elem-1);
+    
+        if(DP[low].second < elem.second){
+            DP.insert(DP.begin()+low, elem);
+        }else{
+            DP.insert(DP.begin()+low+1, elem);
+        }
     }
 }

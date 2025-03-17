@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+// #include <iostream>
 #include <vector>
 using namespace std;
 int main()
@@ -21,7 +21,6 @@ int main()
     {
         for (int j = 0; j < i; j++)
         {
-            cout<<i<<" - "<<j<<endl;
             if (A[j] <= A[i])
             {
                 DP[i] = max(DP[j] + A[i], DP[i]);
@@ -32,4 +31,10 @@ int main()
     // Apro file di output
     ofstream fout("output.txt");
     fout << MAX << endl;
+    // Stampa tutto DP
+    // for (int i = 0; i < N; i++)
+    // {
+    //     cout << DP[i] << " ";
+    // }
+    // cout << endl;
 }
