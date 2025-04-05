@@ -5,21 +5,28 @@ using namespace std;
 
 vector<vector<int>> figli;
 vector<int> numPadri;
+vector<int> DP;
 
 int mincover(int pos,bool taken){
-    int r=0;
+    int N = pos*2;
+    if(!taken) N += 1;
+    if(DP[N] == -1){
+        int r=0;
 
-    if(taken) r++;
+        if(taken) r++;
 
-    for(int f : figli[pos]){
-        if(taken){
-            r+=min(mincover(f,false),mincover(f,true));
-        }else{
-            r+=mincover(f,true);
+        for(int f : figli[pos]){
+            if(taken){
+                r+=min(mincover(f,false),mincover(f,true));
+            }else{
+                r+=mincover(f,true);
+            }
         }
+        
+        DP[N] = r;
     }
 
-    return r;
+    return DP[N];
 }
 
 int main(){
@@ -30,6 +37,7 @@ int main(){
     in >> N;
     figli.resize(N);
     numPadri.resize(N,0);
+    DP.resize(N*2,-1);
 
     for(int i=1; i<N; i++){
         int a,b;
