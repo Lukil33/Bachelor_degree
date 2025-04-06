@@ -13,8 +13,6 @@ void possibilities(int, int, bool);
 bool hasWon(int, int, bool);
 //Funzione che controlla se tale nodo è costretto a perdere
 bool hasLost(int, int, bool);
-//Funzione che controlla se tale nodo è già stato visitato in tale verso
-void callrecursion(int, int, bool);
 
 //Funzioni stupide da riutilizzare
 int count_left(int, int, char);
@@ -63,6 +61,9 @@ void flatLand(){
 void possibilities(int start, int end, bool isGoingRight){
     //Funzione ricorsiva core nella quale controlliamo se un elemento ad una posizione deve vincere, deve perdere, può vincere o può perdere
     
+    int counter_d = 0;
+    int counter_s = 0;
+
     //Inseriamo la posizione che stiamo controllando nella lista di posizioni già controllate
     if(isGoingRight){
         //Se l'elemento vince forzatamente viene aggiunto a res e terminiamo la funzione
@@ -74,8 +75,37 @@ void possibilities(int start, int end, bool isGoingRight){
                 res[start] = true;
             }
 
-            //Mandiamo la funzione in ricorsione per il primo elemento che può prendere il posto del nostro elemento
-            callrecursion(start, end, isGoingRight);
+            //Adesso controllo per ogni elemento nell'array se può prendere il posto al bordo dell'array
+            while(start < end-1){
+                //Rimuovo il primo carattere e controllo se crea nuovi possibili elementi ai bordi e aggiorno il counter
+                start += 1;
+
+                if(vec[start] == 's'){
+                    if(counter_d != 0){
+                        counter_d = 0;
+                    }else if(counter_s != 0){
+                        counter_s = 0;
+                    }else{
+                        counter_s += 1;
+                        //Controlliamo se il nostro elemento è falso e può vincere e in quel caso lo aggiungiamo in res
+                        if(!res[start+1] && !hasLost(start+1, end, isGoingRight)){
+                            res[start+1] = true;
+                        }
+                    }
+                }else{
+                    if(counter_d != 0){
+                        counter_d = 0;
+                        if(counter_s == 1){
+                            //Controlliamo se il nostro elemento è falso e può vincere e in quel caso lo aggiungiamo in res
+                            if(!res[start+1] && !hasLost(start+1, end, isGoingRight)){
+                                res[start+1] = true;
+                            }
+                        }
+                    }else{
+                        counter_d = 1;
+                    }
+                }
+            }
         }
     }else{
         //Se l'elemento vince forzatamente viene aggiunto a res e terminiamo la funzione
@@ -87,8 +117,37 @@ void possibilities(int start, int end, bool isGoingRight){
                 res[end] = true;
             }
 
-            //Mandiamo la funzione in ricorsione per il primo elemento che può prendere il posto del nostro elemento
-            callrecursion(start, end, isGoingRight);
+            //Adesso controllo per ogni elemento nell'array se può prendere il posto al bordo dell'array
+            while(start < end-1){
+                //Rimuovo l'ultimo carattere e controllo se crea nuovi possibili elementi ai bordi e aggiorno il counter
+                end -= 1;
+
+                if(vec[end] == 'd'){
+                    if(counter_s != 0){
+                        counter_s = 0;
+                    }else if(counter_d != 0){
+                        counter_d = 0;
+                    }else{
+                        counter_d += 1;
+                        //Controlliamo se il nostro elemento è falso e può vincere e in quel caso lo aggiungiamo in res
+                        if(!res[end-1] && !hasLost(start, end-1, isGoingRight)){
+                            res[end-1] = true;
+                        }
+                    }
+                }else{
+                    if(counter_s != 0){
+                        counter_s = 0;
+                        if(counter_d == 1){
+                            //Controlliamo se il nostro elemento è falso e può vincere e in quel caso lo aggiungiamo in res
+                            if(!res[end-1] && !hasLost(start, end-1, isGoingRight)){
+                                res[end-1] = true;
+                            }
+                        }
+                    }else{
+                        counter_s = 1;
+                    }
+                }
+            }
         }
     }
 }
@@ -127,56 +186,6 @@ bool hasLost(int start, int end, bool isGoingRight){
         return true;
     }
     return false;
-}
-
-void callrecursion(int start, int end, bool isGoingRight){
-    int counter_d = 0;
-    int counter_s = 0;
-    bool found = false;
-
-    if(isGoingRight){
-        //Adesso controllo per ogni elemento nell'array se può prendere il posto al bordo dell'array
-        while(start < end && !found){
-            //Rimuovo il primo carattere e controllo se crea nuovi possibili elementi ai bordi e aggiorno il counter
-            start += 1;
-
-            if(vec[start] == 's'){
-                if(counter_d > 0){
-                    counter_d -= 1;
-                }else{
-                   possibilities(start+1, end, true);
-                   found = true;
-                }
-            }else{
-                if(counter_d != 0){
-                    counter_d = 0;
-                }else{
-                    counter_d = 1;
-                }
-            }
-        }
-    }else{
-        //Adesso controllo per ogni elemento nell'array se può prendere il posto al bordo dell'array
-        while(start < end && !found){
-            //Rimuovo l'ultimo carattere e controllo se crea nuovi possibili elementi ai bordi e aggiorno il counter
-            end -= 1;
-
-            if(vec[end] == 'd'){
-                if(counter_s > 0){
-                    counter_s -= 1;
-                }else{
-                    possibilities(start, end-1, false);
-                    found = true;
-                }
-            }else{
-                if(counter_s != 0){
-                    counter_s = 0;
-                }else{
-                    counter_s = 1;
-                }
-            }
-        }
-    }
 }
 
 int count_left(int start, int end, char carattere){
