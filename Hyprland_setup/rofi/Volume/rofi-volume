@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Funzione per ottenere volume corrente
+get_volume() {
+    volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\d{1,3}(?=%)' | head -1)
+    mute=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -oP '(?<=Mute: ).*')
+
+    filled_blocks=$((volume / 10))
+    empty_blocks=$((10 - filled_blocks))
+    
+    bar=""
+    for ((i=0; i<filled_blocks; i++)); do
+        bar+="="
+    done
+    for ((i=0; i<empty_blocks; i++)); do
+        bar+=" "
+    done
+
+    if [ "$mute" = "yes" ]; then
+        echo "Muted ($volume%)"
+    else
+        echo "$volume% [$bar]"
+    fi
+}
+
+
+# Loop principale
+while true; do
+    current_volume=$(get_volume)
+
+    # Menu Rofi
+    choice=$(echo -e "Volume: $current_volume\n---------\nVolume-up: +10%\nVolume-down: -10%\nMute/Unmute\nExit"| rofi -dmenu)
+
+    case "$choice" in
+        "Volume-up: +10%")
+            pactl set-sink-volume @DEFAULT_SINK@ +10%
+            ;;
+        "Volume-down: -10%")
+            pactl set-sink-volume @DEFAULT_SINK@ -10%
+            ;;
+        "Mute/Unmute")
+            pactl set-sink-mute @DEFAULT_SINK@ toggle
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+
+
+done

@@ -1,0 +1,43 @@
+// -*- mode: jsonc -*-
+{
+    // "layer": "top", // Waybar at top layer
+    "position": "top", // Waybar position (top|bottom|left|right)
+    //"height": 20, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 5, // Gaps between modules (4px)
+    "margin-left": 0,
+    "margin-right": 0,
+
+    //Include modules
+    "include": ["/etc/xdg/waybar/modules.json"],
+
+    // Choose the order of the modules
+    "modules-left": [
+	"custom/settings",
+	"clock",
+	"custom/update"
+    ],
+    "modules-center": [
+        "hyprland/workspaces"
+    ],
+    "modules-right": [
+	"group/hardware",
+        "pulseaudio",
+	"bluetooth",
+	"network",
+	"battery",
+	"custom/exit"
+    ],
+
+    // Group_hardware
+    "group/hardware": {
+	"orientation": "horizontal",
+	"modules": [
+	    "custom/expand",
+	    "memory",
+	    "cpu",
+	    "temperature",
+	    "custom/endpoint"
+	]
+    }
+}

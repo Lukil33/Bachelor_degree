@@ -1,0 +1,28 @@
+
+TLP_STATUS=$(systemctl is-active tlp)
+
+CURRENT_GOVERNOR=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
+
+CHOICE=$(echo -e "Stato TLP: $TLP_STATUS\nGovernor attuale: $CURRENT_GOVERNOR\n----------\nModalità Risparmio Energetico\nModalità Bilanciata\nModalità Performance" | rofi -dmenu -i -p "Gestione Energia")
+
+case "$CHOICE" in
+    "Modalità Bilanciata")
+        # Attiva modalità bilanciata usando TLP
+        ;;
+    "Modalità Risparmio Energetico")
+        # Attiva modalità risparmio energetico usando TLP
+        ;;
+    "Modalità Performance")
+        # Attiva modalità performance usando TLP
+        ;;
+    *)
+        echo "Nessuna azione eseguita"
+        ;;
+esac
+
+if [ "$TLP_STATUS" = "inactive" ]; then
+    echo "Attivando TLP..."
+    sudo systemctl start tlp
+else
+    echo "TLP è già attivo"
+fi

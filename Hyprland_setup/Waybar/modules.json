@@ -1,0 +1,151 @@
+//Modules File
+{
+    //Sinistra
+
+    // Custom settings
+    "custom/settings": {
+	"format": " ",
+	"on-click": "swaync-client -t",
+	"tooltip": false,
+    },
+
+    // Clock
+    "clock": {
+        "format": "{:%H:%M %a}",
+        "timezone": "Europe/Rome",
+	"on-click": "gnome-calendar"
+    },
+
+    // Custom update
+    "custom/update": {
+        "format": "󰅢  {}",
+        "exec": "dnf check-update -q | grep -c ^[a-z0-9] || echo 0",
+        "interval": 60,
+	"tooltip": false
+    },
+
+
+    //Centro
+
+    // Workspaces
+    "hyprland/workspaces" : {
+       "format": "{icon}",
+        "on-click": "activate",
+        "format-icons": {
+	    "active": " ",
+            "default": " ",
+            "empty": " "
+        },
+	"sort-by-number": true,
+	"separate-outputs": true,
+    },
+
+
+    //Destra
+
+    // Custom expand
+    "custom/expand": {
+        "format": "",
+        "tooltip": false
+    },
+    //Memory
+    "memory": {
+        "format": " ",
+        "tooltip": false,
+        "on-click": "baobab",
+    },
+    // CPU
+    "cpu": {
+	"format": " ",
+        "tooltip": false,
+        "on-click": "gnome-system-monitor",
+    },
+    // Temperature
+    "temperature":{
+        "format": "",
+        "tooltip": false,
+        "critical-threshold": 80,
+        "on-click": "gnome-system-monitor",
+    },
+    // Custom endpoint
+    "custom/endpoint":{
+        "format": "|",
+        "tooltip": false
+    },
+    // Group Hardware
+    "group/hardware": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 600,
+            "transition-to-left": true,
+            "click-to-reveal": true
+        },
+	"modules": [
+            "custom/expand",
+            "memory",
+            "cpu",
+            "temperature"
+        ]
+    },
+
+    //Pulseaudio
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{icon}",
+        "format-bluetooth": "{icon}",
+        "format-bluetooth-muted": "{icon}",
+        "format-muted": " ",
+        "format-icons": {
+            "headphone": " ",
+            "hands-free": " ",
+            "headset": " ",
+            "phone": " ",
+            "portable": " ",
+            "car": " ",
+            "default": [" "," "," "," "," "," "," "," "," "," "]
+        },
+	"tooltip": false,
+	"on-click": "~/.config/rofi/Volume/rofi-volume"
+    },
+
+    // Bluetooth
+    "bluetooth": {
+        "format": "󰂯",
+	"format-disabled": "󰂲" ,
+	"tooltip": false,
+        "interval": 30,
+        "on-click": "~/.config/rofi/Bluetooth/rofi-bluetooth",
+    },
+
+    // Network
+    "network": {
+        "format-wifi": " ",
+        "format-ethernet": " ",
+        "format-disconnected": " ",
+        "tooltip": false,
+        "max-length": 50,
+        "on-click": "alacritty --class dotfiles-floating -e nmtui",
+    },
+
+    // Battery
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 20,
+            "critical": 10
+        },
+	"interval": 30,
+	"format": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+	"tooltip": false,
+        "format-icons": ["󰁺", "󰁻", "󰁽", "󰁿", "󰂁", "󰁹"],
+    },
+
+    //Custom exit
+    "custom/exit": {
+        "format": " ",
+        "on-click": "rofi -show powermenu -modi powermenu:~/.config/rofi/Powermenu/rofi-power-menu",
+        "tooltip": false,
+    },
+}
