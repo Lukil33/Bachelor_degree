@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "tsp.h"
+//#include "tsp.h"
 #define rep(i,a,b) for(int i=a; i<b; i++)
 using namespace std;
 
@@ -56,24 +56,39 @@ int main(){
         }
     }
 
-    UF gino(numNodi);
+    UF insiemi(numNodi);
 
     bool notEnded = true;
+    int sommaFinale = 0;
     int minimum = 0;
     while(notEnded){
+        //cout<<"Conto: "<<insiemi.count()<<endl;
         if(pesoCollegamenti[minimum].empty()){
             minimum += 1;
         }else{
             pair<int,int> arco = pesoCollegamenti[minimum].back();
-            if((nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2) || (gino.connected(arco.first, arco.second) && numNodiCollegati == numNodi-2)){
-                gino.merge(arco.first,arco.second);
-                nodiCollegati[arco.first] += 1;
-                nodiCollegati[arco.second] += 1;
-                numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
+            if(nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2){
+                bool connessi = insiemi.connected(arco.first, arco.second);
+                if(connessi && numNodiCollegati == numNodi-2){
+                    sommaFinale += minimum;
+                    insiemi.merge(arco.first,arco.second);
+                    nodiCollegati[arco.first] += 1;
+                    nodiCollegati[arco.second] += 1;
+                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
+                    notEnded = false;
+                }else if(!connessi){
+                    sommaFinale += minimum;
+                    insiemi.merge(arco.first,arco.second);
+                    nodiCollegati[arco.first] += 1;
+                    nodiCollegati[arco.second] += 1;
+                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
+                }
             }
             pesoCollegamenti[minimum].pop_back();
         }
     }
+
+    //cout<<"Somma: "<<sommaFinale<<endl;
 
     return 0;
 }
