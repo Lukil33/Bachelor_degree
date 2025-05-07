@@ -5,8 +5,7 @@
 #define rep(i,a,b) for(int i=a; i<b; i++)
 using namespace std;
 
-
-class UF {
+class UF{
     int *id, cnt, *sz;
     public:
     // Create an empty union find data structure with N isolated sets.
@@ -36,9 +35,8 @@ class UF {
     int count() { return cnt; }
 };
 
-
-vector<vector<int> > matrix;
-vector<int> numCollegamenti;
+vector<int> nodiCollegati;
+vector<vector<pair<int,int>>> pesoCollegamenti;
 int numNodiCollegati, numNodi;
 
 int main(){
@@ -47,19 +45,35 @@ int main(){
 
     in >> numNodi;
 
-    matrix.resize(numNodi, vector<int>(numNodi));
-    numCollegamenti.resize(numNodi, 0);
+    nodiCollegati.resize(numNodi,0);
+    pesoCollegamenti.resize(1001);
 
     rep(i,1,numNodi){
         rep(j,0,i){
             int a;
             in >> a;
-            matrix[i][j] = a;
-            matrix[j][i] = a;
+            pesoCollegamenti[a].push_back(make_pair(i,j));
         }
     }
 
     UF gino(numNodi);
+
+    bool notEnded = true;
+    int minimum = 0;
+    while(notEnded){
+        if(pesoCollegamenti[minimum].empty()){
+            minimum += 1;
+        }else{
+            pair<int,int> arco = pesoCollegamenti[minimum].back();
+            if((nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2) || (gino.connected(arco.first, arco.second) && numNodiCollegati == numNodi-2)){
+                gino.merge(arco.first,arco.second);
+                nodiCollegati[arco.first] += 1;
+                nodiCollegati[arco.second] += 1;
+                numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
+            }
+            pesoCollegamenti[minimum].pop_back();
+        }
+    }
 
     return 0;
 }
