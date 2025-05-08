@@ -39,6 +39,9 @@ vector<int> nodiCollegati;
 vector<vector<pair<int,int>>> pesoCollegamenti;
 int numNodiCollegati, numNodi;
 
+int prima_somma(UF*);
+string primo_percorso(UF*);
+
 int main(){
     ifstream in ("input.txt");
     ofstream out ("output.txt");
@@ -56,29 +59,37 @@ int main(){
         }
     }
 
-    UF insiemi(numNodi);
+    UF* insiemi = new UF(numNodi);
 
+    //Queste due funzioni fanno la stessa cosa ma forniscono l'output in due modi diversi
+    // *RICORDATI DI COMMENTARE UNA DELLE DUE FUNZIONI*
+    //prima_somma(insiemi);
+    out<<primo_percorso(insiemi);
+
+    insiemi->~UF();
+
+    return 0;
+}
+
+int prima_somma(UF* insiemi){
+    // Funziona che calcola in modo greedy il costo di un possibile percorso minimo
     bool notEnded = true;
     int sommaFinale = 0;
     int minimum = 0;
     while(notEnded){
-        //cout<<"Conto: "<<insiemi.count()<<endl;
+        cout<<"Conto: "<<insiemi->count()<<endl;
         if(pesoCollegamenti[minimum].empty()){
             minimum += 1;
         }else{
             pair<int,int> arco = pesoCollegamenti[minimum].back();
             if(nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2){
-                bool connessi = insiemi.connected(arco.first, arco.second);
+                bool connessi = insiemi->connected(arco.first, arco.second);
                 if(connessi && numNodiCollegati == numNodi-2){
-                    sommaFinale += minimum;
-                    insiemi.merge(arco.first,arco.second);
-                    nodiCollegati[arco.first] += 1;
-                    nodiCollegati[arco.second] += 1;
-                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
                     notEnded = false;
-                }else if(!connessi){
+                }
+                if(!connessi || !notEnded){
                     sommaFinale += minimum;
-                    insiemi.merge(arco.first,arco.second);
+                    insiemi->merge(arco.first,arco.second);
                     nodiCollegati[arco.first] += 1;
                     nodiCollegati[arco.second] += 1;
                     numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
@@ -88,7 +99,61 @@ int main(){
         }
     }
 
-    //cout<<"Somma: "<<sommaFinale<<endl;
+    cout<<"Somma: "<<sommaFinale<<endl;
+    return sommaFinale;
+}
 
-    return 0;
+string primo_percorso(UF* insiemi){
+    // Funziona che calcola in modo greedy un possibile percorso minimo
+    bool notEnded = true;
+    int minimum = 0;
+    vector<vector<int>> collegato;
+    collegato.resize(numNodi);
+    while(notEnded){
+        if(pesoCollegamenti[minimum].empty()){
+            minimum += 1;
+        }else{
+            pair<int,int> arco = pesoCollegamenti[minimum].back();
+            if(nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2){
+                bool connessi = insiemi->connected(arco.first, arco.second);
+                if(connessi && numNodiCollegati == numNodi-2){
+                    notEnded = false;
+                }
+                if(!connessi || !notEnded){
+                    insiemi->merge(arco.first,arco.second);
+                    nodiCollegati[arco.first] += 1;
+                    nodiCollegati[arco.second] += 1;
+                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
+                    collegato[arco.first].push_back(arco.second);
+                    collegato[arco.second].push_back(arco.first);
+                }
+            }
+            pesoCollegamenti[minimum].pop_back();
+        }
+    }
+
+    int  start = 0;
+    int num = collegato[start][0], prec = start;
+    string res = to_string(start)+" ";
+    bool chk = true;
+    while(chk){
+        //cout<<num<<" - "<<prec<<endl;
+        res += to_string(num);
+        if(num == start){
+            chk = false;
+            res += "#";
+        }else if(collegato[num][0] == prec){
+            prec = num;
+            num = collegato[num][1];
+            res += " ";
+        }else{
+            prec = num;
+            num = collegato[num][0];
+            res += " ";
+        }
+    }
+
+    //cout<<res<<endl;
+    return res;
+
 }
