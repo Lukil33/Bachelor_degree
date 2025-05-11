@@ -1,159 +1,73 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 //#include "tsp.h"
 #define rep(i,a,b) for(int i=a; i<b; i++)
 using namespace std;
 
-class UF{
-    int *id, cnt, *sz;
-    public:
-    // Create an empty union find data structure with N isolated sets.
-    UF(int N) {
-        cnt = N; id = new int[N]; sz = new int[N];
-        for (int i = 0; i<N; i++)  id[i] = i, sz[i] = 1; }
-    ~UF() { delete[] id; delete[] sz; }
-
-    // Return the id of component corresponding to object p.
-    int find(int p) {
-        int root = p;
-        while (root != id[root])    root = id[root];
-        while (p != root) { int newp = id[p]; id[p] = root; p = newp; }
-        return root;
-    }
-    // Replace sets containing x and y with their union.
-    void merge(int x, int y) {
-        int i = find(x); int j = find(y); if (i == j) return;
-        // make smaller root point to larger one
-        if (sz[i] < sz[j]) { id[i] = j, sz[j] += sz[i]; }
-        else { id[j] = i, sz[i] += sz[j]; }
-        cnt--;
-    }
-    // Are objects x and y in the same set?
-    bool connected(int x, int y) { return find(x) == find(y); }
-    // Return the number of disjoint sets.
-    int count() { return cnt; }
-};
-
 vector<int> nodiCollegati;
-vector<vector<pair<int,int>>> pesoCollegamenti;
+vector<vector<pair<int,int>>> listaAdiacenza; // si compone di: parte_da -> <peso,nodo_arrivo>, <peso,nodo_arrivo>,<peso,nodo_arrivo>
 int numNodiCollegati, numNodi;
 
-int prima_somma(UF*);
-string primo_percorso(UF*);
+ofstream out ("output.txt");
+
+int greedysearch();
 
 int main(){
     ifstream in ("input.txt");
-    ofstream out ("output.txt");
 
     in >> numNodi;
 
     nodiCollegati.resize(numNodi,0);
-    pesoCollegamenti.resize(1001);
+    listaAdiacenza.resize(numNodi);
 
     rep(i,1,numNodi){
         rep(j,0,i){
             int a;
             in >> a;
-            pesoCollegamenti[a].push_back(make_pair(i,j));
+            listaAdiacenza[j].push_back(make_pair(a,i));
+            listaAdiacenza[i].push_back(make_pair(a,j));
         }
     }
 
-    UF* insiemi = new UF(numNodi);
+    rep(i,0,numNodi){
+        sort(listaAdiacenza[i].begin(), listaAdiacenza[i].end());
+    }
 
-    //Queste due funzioni fanno la stessa cosa ma forniscono l'output in due modi diversi
-    // *RICORDATI DI COMMENTARE UNA DELLE DUE FUNZIONI*
-    //prima_somma(insiemi);
-    out<<primo_percorso(insiemi);
-
-    insiemi->~UF();
+    greedysearch();
 
     return 0;
 }
 
-int prima_somma(UF* insiemi){
-    // Funziona che calcola in modo greedy il costo di un possibile percorso minimo
-    bool notEnded = true;
-    int sommaFinale = 0;
-    int minimum = 0;
-    while(notEnded){
-        cout<<"Conto: "<<insiemi->count()<<endl;
-        if(pesoCollegamenti[minimum].empty()){
-            minimum += 1;
-        }else{
-            pair<int,int> arco = pesoCollegamenti[minimum].back();
-            if(nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2){
-                bool connessi = insiemi->connected(arco.first, arco.second);
-                if(connessi && numNodiCollegati == numNodi-2){
-                    notEnded = false;
-                }
-                if(!connessi || !notEnded){
-                    sommaFinale += minimum;
-                    insiemi->merge(arco.first,arco.second);
-                    nodiCollegati[arco.first] += 1;
-                    nodiCollegati[arco.second] += 1;
-                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
-                }
-            }
-            pesoCollegamenti[minimum].pop_back();
+int greedysearch(){
+    int costo=0;
+    vector<bool> visited;
+
+    visited.resize(numNodi, false);
+
+    out<<0;
+    visited[0]=true;
+    int pos=0;
+
+    rep(i,0,numNodi-1){
+        int min = 0;
+        while(min < numNodi-1 && visited[listaAdiacenza[pos][min].second]){
+            min += 1;
+        }
+        visited[listaAdiacenza[pos][min].second] = true;
+        costo += listaAdiacenza[pos][min].first;
+        out<<" "<<listaAdiacenza[pos][min].second;
+        pos = listaAdiacenza[pos][min].second;
+    }
+
+    rep(i,0,numNodi-1){
+        if(listaAdiacenza[pos][i].second == 0){
+            costo += listaAdiacenza[pos][i].first;
         }
     }
 
-    cout<<"Somma: "<<sommaFinale<<endl;
-    return sommaFinale;
-}
+    out<<" "<<0<<"#"<<endl;
 
-string primo_percorso(UF* insiemi){
-    // Funziona che calcola in modo greedy un possibile percorso minimo
-    bool notEnded = true;
-    int minimum = 0;
-    vector<vector<int>> collegato;
-    collegato.resize(numNodi);
-    while(notEnded){
-        if(pesoCollegamenti[minimum].empty()){
-            minimum += 1;
-        }else{
-            pair<int,int> arco = pesoCollegamenti[minimum].back();
-            if(nodiCollegati[arco.first] < 2 && nodiCollegati[arco.second] < 2){
-                bool connessi = insiemi->connected(arco.first, arco.second);
-                if(connessi && numNodiCollegati == numNodi-2){
-                    notEnded = false;
-                }
-                if(!connessi || !notEnded){
-                    insiemi->merge(arco.first,arco.second);
-                    nodiCollegati[arco.first] += 1;
-                    nodiCollegati[arco.second] += 1;
-                    numNodiCollegati += (nodiCollegati[arco.first]+1)%2 + (nodiCollegati[arco.second]+1)%2;
-                    collegato[arco.first].push_back(arco.second);
-                    collegato[arco.second].push_back(arco.first);
-                }
-            }
-            pesoCollegamenti[minimum].pop_back();
-        }
-    }
-
-    int  start = 0;
-    int num = collegato[start][0], prec = start;
-    string res = to_string(start)+" ";
-    bool chk = true;
-    while(chk){
-        //cout<<num<<" - "<<prec<<endl;
-        res += to_string(num);
-        if(num == start){
-            chk = false;
-            res += "#";
-        }else if(collegato[num][0] == prec){
-            prec = num;
-            num = collegato[num][1];
-            res += " ";
-        }else{
-            prec = num;
-            num = collegato[num][0];
-            res += " ";
-        }
-    }
-
-    //cout<<res<<endl;
-    return res;
-
+    return costo;
 }
