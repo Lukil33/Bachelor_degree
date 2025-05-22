@@ -8,7 +8,7 @@ int main(){
     FILE* in = fopen("input.txt", "r+");
     int out = open("output.txt", O_WRONLY | O_CREAT);
     if(in == NULL || out == -1){
-        printf(stderr,"Error: errore nell'apertura dei file %d\n", out);
+        fprintf(stderr,"Error: errore nell'apertura dei file %d\n", out);
         exit(1);
     }
     int max_dim = 255;
