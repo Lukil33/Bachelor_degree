@@ -3,10 +3,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 int main(){
     FILE* in = fopen("input.txt", "r+");
-    int out = open("output.txt", O_WRONLY | O_CREAT);
+    int out = open("output.txt", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     if(in == NULL || out == -1){
         fprintf(stderr,"Error: errore nell'apertura dei file %d\n", out);
         exit(1);
