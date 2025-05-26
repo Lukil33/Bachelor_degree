@@ -1,0 +1,5 @@
+input.out : input.c
+	gcc input.c -o input.out
+
+output.out : output.c
+	gcc output.c -o output.out

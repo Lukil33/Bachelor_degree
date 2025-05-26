@@ -2,12 +2,11 @@
 #include <unistd.h>
 
 int main() {
-    int res = fork();
-    int palle;
-    if(res == 0){
-        palle = fork();
+    int a = fork();
+    int b;
+    if(a != 0){
+        b = fork();
     }
     printf("Process: %d - Parent: %d\n",getpid(),getppid());
-    printf("hello\n");
     return 0;
 }
