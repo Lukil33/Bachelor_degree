@@ -5,98 +5,121 @@
 #include <unordered_map>
 #include "conclave.h"
 using namespace std;
-#define rep(i,a,b) for(short i=a; i<b; i++)
+#define freaky short
+#define rep(i,a,b) for(freaky i=a; i<b; i++)
 
 bool direction; // Gestisce la direzione nella quale ci stiamo muovendo rispetto alla stack, se dobbiamo aggiungere true, se dobbiamo eliminare false
 bool running;
-short N,M,numRiunioniConsiderate=0, upperBound;
+freaky N,M,numRiunioniConsiderate=0, upperBound, restart = -1;
 ofstream out("output.txt");
 
-vector<short> nodoToNumRiunioni;
-vector<vector<short>> nodoToRiunioni;
-vector<vector<short>> riunioniToNodo;
-vector<short> riunionePresa;
-vector<short> stack;
+vector<freaky> nodoToNumRiunioni;
+vector<vector<freaky>> nodoToRiunioni;
+vector<vector<freaky>> riunioniToNodo;
+vector<freaky> riunionePresa;
+vector<freaky> stack;
 
-void freaky();
 void frakyin();
 void frakyout();
+freaky findFreakyest();
 
 int main(){
     frakyin();
 
-    freaky();
+    bool running = true, direction = true;
+
+    while(running){
+        if(direction){
+            if(((stack.size() == upperBound-1) && (M != numRiunioniConsiderate)) || (stack.size() >= upperBound)){
+                // Se il numero di nodi è già troppo elevato
+                direction = false;
+            }else if(numRiunioniConsiderate == M){
+                // Se siamo già arrivati alla soluzione
+                frakyout();
+                direction = false;
+            }else{
+                freaky pos = findFreakyest();
+                if(pos == -1){
+                    // Se non ci sono più elementi dello stesso valore del max
+                    direction = false;
+                }else if((upperBound-stack.size()-1)*nodoToNumRiunioni[pos] < M-numRiunioniConsiderate){
+                    // Se in qualsiasi caso non possiamo arrivare a comprire tutte le soluzioni nei casi minimi
+                    direction = false;
+                }else{
+                    // Aggiungiamo il nodo alla stack
+                    stack.push_back(pos);
+
+                    // Per ogni riunione alla quale partecipava il nodo
+                    for(freaky riunione : nodoToRiunioni[pos]){
+                        // Se la riunione non è ancora stata considerata
+                        if(riunionePresa[riunione] == 0){
+                            // Per ogni nodo all'interno della riunione
+                            for(freaky nodo : riunioniToNodo[riunione]){
+                                // Diminuiamo di 1 il numero di riunioni alle quali fa parte
+                                nodoToNumRiunioni[nodo] -= 1;
+                            }
+                            numRiunioniConsiderate += 1;
+                        }
+                        riunionePresa[riunione] += 1;
+                    }
+                }
+            }
+        }else{
+            if(stack.empty()){
+                // Se la pila è vuota ed abbiamo dunque analizzato tutto
+                running = false;
+            }else{
+                freaky pos = stack[stack.size()-1];
+
+                // Per ogni riunione alla quale il nodo partecipava
+                for(freaky riunione : nodoToRiunioni[pos]){
+                    riunionePresa[riunione] -= 1;
+                    // Se la riunione veniva considerata solo da lui
+                    if(riunionePresa[riunione] == 0){
+                        // Per ogni nodo all'interno della riunione
+                        for(freaky nodo : riunioniToNodo[riunione]){
+                            // Aumentiamo di 1 il numero di riunioni alle quali fa parte
+                            nodoToNumRiunioni[nodo] += 1;
+                        }
+                        numRiunioniConsiderate -= 1;
+                    }
+                }
+
+                // Rimuoviamo il nodo dalla stack
+                stack.pop_back();
+
+                // Se modificando l'upperBound i successivi calcoli sono inutili facciamo che rimuovere anche il penultimo elemento
+                if(((stack.size() == upperBound-1) && (M != numRiunioniConsiderate)) || (stack.size() >= upperBound)){
+                    direction = false;
+                }else{
+                    restart = pos;
+                    direction = true;
+                }
+            }
+        }
+    }
 
     return 0;
 }
 
-void freaky(){
-    if(((stack.size() == upperBound-1) && (M != numRiunioniConsiderate)) || (stack.size() >= upperBound)) return;
-    if(numRiunioniConsiderate == M){frakyout();return;}
-    
-    // Troviamo il nodo che partecipa a più riunioni
-    short pos = 0, sec = -1;
-    vector<short> max = {0};
-    rep(i,1,N){
-        if(nodoToNumRiunioni[i] > nodoToNumRiunioni[pos]){
-            sec = pos;
-            max.clear();
-            pos = i;
-            max.push_back(i);
-            //max.insert(max.begin(),i);
-        }else if(nodoToNumRiunioni[i] == nodoToNumRiunioni[pos]){
-            max.push_back(i);
-            //max.insert(max.begin(),i);
-        }else if(nodoToNumRiunioni[i] > nodoToNumRiunioni[sec]){
-            sec = i;
-        }
-    }
-
-    // Per ogni nodo con il valore massimo di Riunioni
-    for(short i:max){
-        if(upperBound-stack.size()-1 > max.size()){
-            if(max.size()*nodoToNumRiunioni[pos]+(upperBound-stack.size()-1-max.size())*nodoToNumRiunioni[sec] < M-numRiunioniConsiderate) return;
-        }else{
-            if((upperBound-stack.size()-1)*nodoToNumRiunioni[pos] < M-numRiunioniConsiderate) return;
-        }
-        
-        // Aggiungiamo il nodo alla stack
-        stack.push_back(i);
-
-        // Per ogni riunione alla quale partecipava il nodo
-        for(short riunione : nodoToRiunioni[i]){
-            // Se la riunione non è ancora stata considerata
-            if(riunionePresa[riunione] == 0){
-                // Per ogni nodo all'interno della riunione
-                for(short nodo : riunioniToNodo[riunione]){
-                    // Diminuiamo di 1 il numero di riunioni alle quali fa parte
-                    nodoToNumRiunioni[nodo] -= 1;
-                }
-                numRiunioniConsiderate += 1;
-            }
-            riunionePresa[riunione] += 1;
-        }
-
-        freaky();
-
-        // Per ogni riunione alla quale il nodo partecipava
-        for(short riunione : nodoToRiunioni[i]){
-            riunionePresa[riunione] -= 1;
-            // Se la riunione veniva considerata solo da lui
-            if(riunionePresa[riunione] == 0){
-                // Per ogni nodo all'interno della riunione
-                for(short nodo : riunioniToNodo[riunione]){
-                    // Aumentiamo di 1 il numero di riunioni alle quali fa parte
-                    nodoToNumRiunioni[nodo] += 1;
-                }
-                numRiunioniConsiderate -= 1;
+freaky findFreakyest(){
+    freaky pos = 0;
+    if(restart == -1){
+        // Troviamo il nodo che partecipa a più riunioni
+        rep(i,pos+1,N){
+            if(nodoToNumRiunioni[i] > nodoToNumRiunioni[pos]){
+                pos = i;
             }
         }
-
-        // Rimuoviamo il nodo dalla stack
-        stack.pop_back();
-        if(((stack.size() == upperBound-1) && (M != numRiunioniConsiderate)) || (stack.size() >= upperBound)) return;
+    }else{
+        pos = restart+1;
+        while(pos < (freaky)nodoToNumRiunioni.size() && nodoToNumRiunioni[pos] != nodoToNumRiunioni[restart]){
+            pos += 1;
+        }
+        restart = -1;
     }
+    if(pos >= (freaky)nodoToNumRiunioni.size()) return -1;
+    return pos;
 }
 
 void frakyin(){
@@ -113,10 +136,10 @@ void frakyin(){
 
     // Gestione input
     rep(i,0,M){
-        short numPartecipanti;
+        freaky numPartecipanti;
         in>>numPartecipanti;
         rep(j,0,numPartecipanti){
-            short nodo;
+            freaky nodo;
             in>>nodo;
             nodoToNumRiunioni[nodo] += 1;
             nodoToRiunioni[nodo].push_back(i);
@@ -127,10 +150,10 @@ void frakyin(){
 
 void frakyout(){
     // Gestione output
-    upperBound = (short)stack.size();
+    upperBound = (freaky)stack.size();
 
     out<<stack.size()<<" ";
-    rep(i,0,(short)stack.size()){
+    rep(i,0,(freaky)stack.size()){
         out<<stack[i]<<" ";
     }
     out<<"#"<<endl;
