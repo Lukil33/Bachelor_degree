@@ -29,9 +29,9 @@ void manage_message(int, siginfo_t* info,void*){
 
     // Lettura dei vari elo
     char pathAvv[20],eloAvv[10],pathMio[20],eloMio[10];
-    sprintf(pathMio,"/tmp/%d.txt",avversario); // Creo il Path del mio file
+    sprintf(pathMio,"/tmp/%d.txt",getpid()); // Creo il Path del mio file
     sprintf(pathAvv,"/tmp/%d.txt",avversario); // Creo il Path del file del mio avversario
-    int mioFile = open(pathAvv,O_RDONLY,0666); // Apro il mio file
+    int mioFile = open(pathMio,O_RDONLY,0666); // Apro il mio file
     if(mioFile == -1){ // In caso di errore
         fprintf(stderr, "Error: file dati miei non trovato\n");
         fflush(stdout);
@@ -43,7 +43,7 @@ void manage_message(int, siginfo_t* info,void*){
         fflush(stdout);
         exit(50);
     }
-    read(avvFile,&eloMio,sizeof(eloMio)); // Leggo il mio elo
+    read(mioFile,&eloMio,sizeof(eloMio)); // Leggo il mio elo
     read(avvFile,&eloAvv,sizeof(eloMio)); // Leggo l'elo del mio avversario
     close(mioFile); // Chiudo il mio file
     close(avvFile); // Chiudo il file dell'avversario

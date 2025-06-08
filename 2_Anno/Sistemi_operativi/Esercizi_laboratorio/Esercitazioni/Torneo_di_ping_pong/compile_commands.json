@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-D_XOPEN_SOURCE=700",
+      "-o",
+      "main",
+      "main.c"
+    ],
+    "directory": "/home/lukil/University/2_Anno/Sistemi_operativi/Esercizi_laboratorio/Esercitazioni/Torneo_di_ping_pong",
+    "file": "/home/lukil/University/2_Anno/Sistemi_operativi/Esercizi_laboratorio/Esercitazioni/Torneo_di_ping_pong/main.c",
+    "output": "/home/lukil/University/2_Anno/Sistemi_operativi/Esercizi_laboratorio/Esercitazioni/Torneo_di_ping_pong/main"
+  }
+]

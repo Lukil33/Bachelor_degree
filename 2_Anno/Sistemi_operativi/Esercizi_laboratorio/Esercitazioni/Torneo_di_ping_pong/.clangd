@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-D_XOPEN_SOURCE=700]
