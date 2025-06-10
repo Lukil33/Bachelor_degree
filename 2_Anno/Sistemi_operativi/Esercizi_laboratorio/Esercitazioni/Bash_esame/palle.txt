@@ -1,0 +1,4 @@
+kill 10 18812
+kill 12 18812
+fifo fifo figo
+queue 4 godo
