@@ -1,41 +1,25 @@
-# Makefile
+FILE =
+DIR =
+EXE =
 
-# Ottieni le variabili da terminale
-FILE ?=
-DIR ?=
-EXE ?=
+all: check directory build
 
-# Obiettivo principale
-all:
+check:
 	@if [ -z "$(FILE)" ] || [ -z "$(DIR)" ] || [ -z "$(EXE)" ]; then \
-		echo "Errore: Devi specificare le variabili FILE=<path>, DIR=<path> ed EXE=<name>"; \
+		echo "You must insert the necessary argument"; \
 		exit 1; \
 	fi
 
 	@if [ ! -f "$(FILE)" ]; then \
-		echo "Errore: Il file $(FILE) non esiste"; \
+		echo "An error occurred while opening the file"; \
 		exit 1; \
 	fi
 
-	@echo "Creazione della directory $(DIR)"
+directory:
 	@mkdir -p "$(DIR)"
-
-	@echo "Copia del file $(FILE) in $(DIR)"
 	@cp "$(FILE)" "$(DIR)/"
 
-	@echo "Compilazione dei sorgenti"
-	@$(MAKE) build -C "$(DIR)"
-
-# Obiettivo build: compilazione dei sorgenti
-.PHONY: build
 build:
-	# Sostituisci questi comandi con la tua compilazione specifica
-	# Ad esempio: gcc -o $(EXE) *.c
-	@echo "Compilo i sorgenti in $(EXE)"
-	@gcc -o "$(EXE)" *.c
+	gcc main.c -o "$(DIR)/$(EXE)"
 
-# Pulizia
-.PHONY: clean
-clean:
-	@echo "Pulizia della cartella $(DIR)"
-	@rm -rf "$(DIR)"
+.PHONY: check directory build all

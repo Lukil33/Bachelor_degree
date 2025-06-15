@@ -27,12 +27,14 @@ struct args{
 };
 
 void* sendkill(void* arg){
+    pthread_detach(pthread_self());
     kill(atoi(((struct args *)arg)->second_arg),atoi(((struct args *)arg)->first_arg));
     printf("Processo %d killato con flag %d\n",((struct args *)arg)->second_arg),atoi(((struct args *)arg)->first_arg);
     return NULL;
 }
 
 void* sendqueue(void* arg){
+    pthread_detach(pthread_self());
     printf("Messaggio inviato alla coda\n");
     key_t chiave = ftok(path, 1);
     int idCoda = msgget(chiave,IPC_CREAT | 0666);
@@ -44,6 +46,7 @@ void* sendqueue(void* arg){
 }
 
 void* sendfifo(void* arg){
+    pthread_detach(pthread_self());
     printf("Messaggio inviato alla fifo\n");
     mkfifo(((struct args *)arg) -> first_arg, S_IRUSR|S_IWUSR);
     int fifo = open(((struct args *)arg) -> first_arg, O_WRONLY);

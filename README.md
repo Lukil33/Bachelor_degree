@@ -9,7 +9,7 @@ Questa è la repository con tutti i materiali dei corsi da me passati fino in da
  - PFunzionale : (Esercizi, vecchi esami)
  - Probabilità : (Esercizi giornalieri)
 
- 2° Anno:
+2° Anno:
  - Basi di dati : (Pdf lezioni, cheat sheet)
  - Ingegneria del software : (Progetto, esercizi)
  - Introduction to security : (Pdf lezioni, cheat sheet)
