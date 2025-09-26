@@ -1,4 +1,4 @@
-Questa è la repository con tutti i materiali dei corsi da me passati fino in data odierna, i corsi aggiunti al momento sono:
+Questa è la repository con tutti i materiali dei corsi da me seguiti fino in data odierna, i corsi aggiunti al momento sono:
 
 1° Anno:
  - Analisi 1 : (Pdf lezioni, cheat sheet)
@@ -19,3 +19,9 @@ Questa è la repository con tutti i materiali dei corsi da me passati fino in da
  - Sistemi Operativi : (Pdf lezioni)
  - Competitive programming : (Esercizi risolti)
  - Cyber challenge : (1° tentativo di ingresso alla challenge)
+
+3° Anno:
+ - Linguaggi formali e compilatori: (Pdf lezioni, dispense)
+ - Logica computazionale: (Pdf lezioni, dispense)
+ - Advanced Programming: (Esercizi)
+ - Computability and computational complexity: (Dispense)
