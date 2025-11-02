@@ -1,5 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::str::ParseBoolError;
 use crate::Macchina::{ChickHicks, DocHudson, FrancescoBernoulli, SaettaMcQueen};
 
 fn is_it_luhn(input: &String) -> bool {
@@ -92,7 +93,7 @@ fn recognise_owner(database: &Vec<Car>, plate: &String) -> Option<(String,String
     None
 }
 
-/*
+
 #[derive(Eq, Hash, PartialEq)]
 enum Item {
     Chesterfield,
@@ -169,7 +170,6 @@ impl VendingMachine {
         }
     }
 }
-*/
 
 #[derive(Debug)]
 struct Date {
@@ -203,6 +203,45 @@ impl std::fmt::Display for BoxShipping {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f,"Name: {}\nReconsignment code: {}\nDate & Time: {} {}",self.name,self.barcode,self.shipment_date,self.shipment_hour)
     }
+}
+
+#[derive(Debug)]
+struct Publication{
+    name: String,
+    code: u32,
+    year: u32
+}
+impl Publication{
+    fn new(name: String, code: u32, year: u32) -> Self{
+        Publication{name,code,year}
+    }
+}
+trait Libraryitem{
+    fn publication(&self) -> &Publication;
+}
+enum Element {
+    Books {
+        publication: Publication,
+        author: String,
+        company: String,
+    },
+    Articles {
+        publication: Publication,
+        orchid: u32
+    },
+    Magazines {
+        publication: Publication,
+        number: u32,
+        month: u32
+    }
+}
+impl Element {
+    fn new_book(&self){
+
+    }
+
+    // write a function to reverse a string
+
 }
 
 fn main() {
@@ -300,5 +339,5 @@ fn main() {
     // Magazines should have a number and a month.
     // Then implement the methods to add a book, an article and a magazine to the library system.
     // Finally, implement a method to print the library system via the {} argument in the println! macro.
-    // TODO()
+
 }
