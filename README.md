@@ -23,5 +23,7 @@ Questa è la repository con tutti i materiali dei corsi da me seguiti fino in da
 3° Anno:
  - Linguaggi formali e compilatori: (Pdf lezioni, dispense)
  - Logica computazionale: (Pdf lezioni, dispense)
- - Advanced Programming: (Esercizi)
+ - Advanced Programming: (Esercizi, progetto)
  - Computability and computational complexity: (Dispense)
+ - Machine Learning: (Pdf lezioni, dispense, esercizi)
+ - Tirocinio
