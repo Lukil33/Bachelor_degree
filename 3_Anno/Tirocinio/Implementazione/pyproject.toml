@@ -1,0 +1,9 @@
+[project]
+name = "implementazione"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "hypergraphx>=1.7.9",
+]

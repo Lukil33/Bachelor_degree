@@ -1,0 +1,44 @@
+\documentclass[12pt,a4paper,oneside]{report} % oppure book se vuoi capitoli più "formali"
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+
+% --- Margini ---
+\usepackage[a4paper,margin=2.5cm]{geometry}
+
+% --- Matematica ---
+\usepackage{amsmath, amssymb, amsthm}
+
+% --- Grafica ---
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% --- Tabelle ---
+\usepackage{booktabs}
+
+% --- Link ---
+\usepackage[hidelinks]{hyperref}
+
+% --- Bibliografia ---
+\usepackage[backend=biber,style=alphabetic]{biblatex}
+\addbibresource{bibliography.bib}
+
+% --- Personalizzazioni ---
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% --- Titolo ---
+\title{Appunti Tirocinio}
+\author{Luca Prigione}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% Qui includerai i file separati
+\include{Capitoli/definizione_problema}
+
+\end{document}
