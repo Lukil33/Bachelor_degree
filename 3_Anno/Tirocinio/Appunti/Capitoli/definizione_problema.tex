@@ -3,11 +3,11 @@
 \subsection{Introduction}
 
 We consider an online variant of the Temporal Hitting Set problem under a sliding window model. 
-To this end, we model the input as a temporal hypergraph $H = (V, E)$, where each hyperedge is a pair $(S, t)$, with $S \subseteq V$ and $t \in \mathbb{T}$ representing the time at which the hyperedge appears.
+To this end, we model the input as a temporal hypergraph $H = (V, E)$, where each hyperedge $(S, t)$ consist of a subset of vertices $S \subseteq V$ and a discrete time step $t \in \mathbb{T}$.
 
-Given a time window of size $\Delta$, we define the set of active hyperedges at time $t$ as:
+Given a time window of size $\epsilon$, we define the set of active hyperedges at time $t$ as:
 \[
-W(t) = \{ (S, t') \in E \mid t - \Delta \le t' \le t \}.
+W(t) = \{ (S, t') \in E \mid t - \epsilon \le t' \le t \}.
 \]
 
 At each time step $t$, the algorithm maintains a hitting set $X(t) \subseteq V$ such that:
@@ -21,7 +21,7 @@ The goal is to maintain a feasible hitting set over time while optimizing the fo
 
 \begin{itemize}
     \item \textbf{Solution size:} minimize $|X(t)|$ at each time step;
-    \item \textbf{Update cost:} minimize the number of changes between consecutive solutions, measured as $|X(t) \triangle X(t-1)|$;
+    \item \textbf{Update cost:} minimize the number of changes between consecutive solutions, measured as $\Delta X(t) = |X(t) \setminus X(t-1)| + |X(t-1) \setminus X(t)|$; % Questa formula non è correttissima, perchè guarda solamente il numero di nodi e non effettivamente se i nodi stessi sono uguali o diversi
     \item \textbf{Computational efficiency:} minimize the time required to update the solution as the sliding window evolves.
 \end{itemize}
 

@@ -2,3 +2,16 @@
 .idea/
 target/
 .vscode/
+*.aux
+*.bcf
+*.log
+*.out
+*.xml
+*.gz
+*.bbl
+*.fdb_latexmk
+*.fls
+*.dvi
+*.synctex
+*.ist
+*.acn

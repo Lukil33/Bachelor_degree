@@ -6,4 +6,5 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "hypergraphx>=1.7.9",
+    "python-sat>=1.9.dev2",
 ]
