@@ -3,6 +3,8 @@ import json
 import sys
 from hypergraphx import TemporalHypergraph, Hypergraph
 from pysat.examples.hitman import Hitman
+from minimal_hitting_set import minimal_hitting_set_construction
+from euristic_hitting_set import greedy_euristic_hitting_set_construction
 
 ### This is the data decompression function, it reads a gzip file and returns a dictionary
 def file_decompression(filepath) -> list:
@@ -91,4 +93,9 @@ if len(sys.argv) != 3 and len(sys.argv) != 4: # Input format check
 
 (window_size, window_slide_size) = window_construction(arrival_time_list) # I construct the temporal windows based on the arrival times of the edges in the dataset and the temporal window size provided
 
-hitting_set = hitting_set_construction(temporal_hypergraph, window_size) # I construct the hitting set of nodes that covers all the edges in the starting hypergraph, using the temporal window size provided
+min_hitting_set = minimal_hitting_set_construction(temporal_hypergraph, window_size) # I construct the hitting set of nodes that covers all the edges in the starting hypergraph, using the temporal window size provided
+# TODO: qua si potrebbe aggiungere l'euristica necessaria per trovare un buon hitting set in un tempo ragionevole
+not_minimal_hitting_set = greedy_euristic_hitting_set_construction(temporal_hypergraph, window_size)
+
+print(f"Debug: Minimal hitting set size: {len(min_hitting_set)}")
+print(f"Debug: Greedy euristic hitting set size: {len(not_minimal_hitting_set)}\n")
