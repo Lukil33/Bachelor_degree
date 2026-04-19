@@ -2,25 +2,34 @@ import gzip
 import json
 import sys
 from hypergraphx import TemporalHypergraph, Hypergraph
-from pysat.examples.hitman import Hitman
-from minimal_hitting_set import minimal_hitting_set_construction
-from euristic_hitting_set import greedy_euristic_hitting_set_construction
+
+from minimal_hitting_set import minimal_hitting_set
+
+from not_optimized_greedy_hitting_set import NO_greedy_hitting_set
+from degree_optimization_greedy_hitting_set import DO_greedy_hitting_set
+from optimized_greedy_hitting_set import O_greedy_hitting_set
+
+from not_optimized_arch_driven_hitting_set import NO_arch_driven_hitting_set
+
 
 ### This is the data decompression function, it reads a gzip file and returns a dictionary
 def file_decompression(filepath) -> list:
     try:
+        # I read the gzip file and load the json data into a list
         with gzip.open(filepath, 'rt', encoding='utf-8') as file:
             data = json.load(file)
-        return data # Data is now a list containing the contents of the JSON file
+
+        return data
     except Exception as e:
         print(f"Errore durante la lettura: {e}")
         exit(-1)
-
 ### This is the hypergraph construction function, it takes the decompressed data and constructs the corresponding hypergraph
 def hypergraph_construction(data: list) -> tuple[TemporalHypergraph, list]:
+    # I define an empty list to store the arrival times of the edges in the dataset and an empty temporal hypergraph
     time_list = []
     TH = TemporalHypergraph()
 
+    # I iterate over all the elements in the decompressed data and add them to the hypergraph
     for element in data:
         if element.get("type") == "node":   # If the element is a node, we add it to the hypergraph
             TH.add_node(element.get("idx"), element.get("metadata"))
@@ -32,6 +41,7 @@ def hypergraph_construction(data: list) -> tuple[TemporalHypergraph, list]:
         else:
             continue # If the element is neither a node nor an edge, we skip it
 
+    # Debug print statements
     print(f"Debug: Hypergraph construction completed.")
     print(f"Debug: Number of nodes: {TH.num_nodes()}")
     print(f"Debug: Number of edges: {TH.num_edges()}")
@@ -42,45 +52,60 @@ def hypergraph_construction(data: list) -> tuple[TemporalHypergraph, list]:
 
 ### This is the temporal window construction function, it takes the list of arrival times and constructs the temporal windows based on the provided window size and slide size.
 def temporal_window_construction(time: list) -> int:
+
+    # I set the temporal window slide size based on the distribution of the dataset given
     time_size = len(time)
     time.sort()
     time_diff = time[int(time_size*0.85)] - time[int(time_size*0.15)]
-    time_diff = int(time_diff / (time_size/500)) # We set the temporal window slide size based on the distribution of the dataset given, in particular we set it to be equal to the average inter-arrival time of the edges in the dataset, which is given by the total time difference between the 15th and 85th percentile of the arrival times divided by the number of edges in that time interval (which is 70% of the total number of edges). This way we ensure that we have a good coverage of the edges in the dataset while also avoiding too much overlap between the temporal windows.
-    return time_diff
+    time_diff = int(time_diff / (time_size/500))
 
+    return time_diff
 ### This is the temporal window construction function, if the slide size is not provided, it is set based on the distribution of the dataset given.
 def window_construction(arrival_time_list: list) -> tuple[int,int]:
     window_size = int(sys.argv[2])
     window_slide_size = 0
-    if len(sys.argv) == 3: # If the temporal window slide size is not provided, we set it based on the distribution of the dataset given
+
+    # If the temporal window slide size is not provided, we set it based on the distribution of the given dataset 
+    if len(sys.argv) == 3:
         window_slide_size = temporal_window_construction(arrival_time_list)
     else:
         window_slide_size = int(sys.argv[3])
 
+    # Debug print statements
     print(f"Debug: Temporal window construction completed.")
     print(f"Debug: Temporal window size: {window_size}")
     print(f"Debug: Temporal window slide size: {window_slide_size}\n")
+
     return (window_size, window_slide_size)
 
 
 ### This is the function that computes the hitting set of nodes that covers all the edges in the starting hypergraph, it takes as input the temporal hypergraph and the temporal window size, and returns the hitting set of nodes that covers all the edges in the hypergraph.
 def hitting_set_construction(temporal_hypergraph: TemporalHypergraph, window_size: int) -> set:
+    # I take all the esges in the temporal window from the temporal hypergraph
     dictionary: dict[int, Hypergraph] = temporal_hypergraph.subhypergraph(time_window = tuple([temporal_hypergraph.min_time(), temporal_hypergraph.min_time() + window_size]))
-    connections: list = []
-
+    
+    # I construct the starting connection set by adding all the different edges
+    connections: set = set()
     for time in dictionary:
         edges: list = dictionary[time].get_edges()
         for nodes in edges:
-            connections.append(list(nodes))
+            connections.add(tuple(sorted(list(nodes))))
 
-    print(f"Debug: Starting Hypergraph calculated correctly.")
-    print(f"Debug: Starting Hypergraph size: {len(connections)}")
-    print(f"Debug: Hitting set construction started.")
-    H = Hitman(bootstrap_with = connections, solver='cd', htype = 'sorted', mxs_exhaust = True)
-    element: list = H.get()
-    print(f"Debug: Hitting set construction completed.")
-    print(f"Debug: Hitting set size: {len(element)}\n")
-    return set(element)
+    # I find using different approaches some valid hitting set
+    mhs = minimal_hitting_set(connections)
+    nohs = NO_greedy_hitting_set(connections)
+    dohs = DO_greedy_hitting_set(connections)
+    ohs = O_greedy_hitting_set(connections)
+    noadhs = NO_arch_driven_hitting_set(connections)
+    
+    # Debug print statements
+    print(f"Debug: Minimal hitting set size: {len(mhs)}")
+    print(f"Debug: Not optimized greedy hitting set size: {len(nohs)}\n")
+    print(f"Debug: Degree optimized greedy hitting set size: {len(dohs)}\n")
+    print(f"Debug: Optimized greedy hitting set size: {len(ohs)}\n")
+    print(f"Debug: Not optimized arch driven hitting set size: {len(noadhs)}\n")
+
+    return mhs
 
 
 ### Main function
@@ -89,13 +114,13 @@ if len(sys.argv) != 3 and len(sys.argv) != 4: # Input format check
     print("Usage: uv run <file_name.py> <dataset.json.gz> <temporal_window_size(in seconds)> <optional: temporal_window_slide_size(in seconds)>")
     exit(-1)
 
-(temporal_hypergraph, arrival_time_list) = hypergraph_construction(file_decompression(sys.argv[1])) # I construct the temporal hypergraph and the list of arrival times of the edges in the dataset based on the decompressed data from the input file
+# I construct the temporal hypergraph and the list of arrival times of the edges in the dataset based on the decompressed data from the input file
+(temporal_hypergraph, arrival_time_list) = hypergraph_construction(file_decompression(sys.argv[1]))
 
-(window_size, window_slide_size) = window_construction(arrival_time_list) # I construct the temporal windows based on the arrival times of the edges in the dataset and the temporal window size provided
+# I construct the temporal windows based on the arrival times of the edges in the dataset and the temporal window size provided
+(window_size, window_slide_size) = window_construction(arrival_time_list)
 
-min_hitting_set = minimal_hitting_set_construction(temporal_hypergraph, window_size) # I construct the hitting set of nodes that covers all the edges in the starting hypergraph, using the temporal window size provided
-# TODO: qua si potrebbe aggiungere l'euristica necessaria per trovare un buon hitting set in un tempo ragionevole
-not_minimal_hitting_set = greedy_euristic_hitting_set_construction(temporal_hypergraph, window_size)
+# I construct the hitting set of nodes that covers all the edges in the starting hypergraph based on the temporal window size provided
+starting_hitting_set = hitting_set_construction(temporal_hypergraph, window_size)
 
-print(f"Debug: Minimal hitting set size: {len(min_hitting_set)}")
-print(f"Debug: Greedy euristic hitting set size: {len(not_minimal_hitting_set)}\n")
+# TODO: crea una funzione per capire ad ogni passo della finestra temporale come aggiornare le varie componenti, ovvero cosa va modificato?

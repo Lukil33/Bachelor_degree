@@ -1,0 +1,3 @@
+# TODO: crea vari euristiche più o meno veloci
+# TODO: prova a risolvere il problema come se fosse set cover e quindi coprendo solamente gli archi
+# TODO: non modificare la struttura dell'ipergrafo, creati un set e controlla solamente quello creandoti una fake rimozione
