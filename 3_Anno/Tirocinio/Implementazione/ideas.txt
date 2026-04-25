@@ -1,3 +1,13 @@
-# TODO: crea vari euristiche più o meno veloci
-# TODO: prova a risolvere il problema come se fosse set cover e quindi coprendo solamente gli archi
-# TODO: non modificare la struttura dell'ipergrafo, creati un set e controlla solamente quello creandoti una fake rimozione
+TODO LIST:
+
+- crea una funzione di supporto per gestire il movimento della finestra temporale
+
+- cerca di capire cosa fare con le rimozioni, parti dall'idea di tenerle tutte, successivamente provi l'hitting set con i nuovi archi e poi rimuovi quelle inutili
+
+- migliora il punto precedente controllando prima se servono ancora e poi successivamente provando un hitting set su quelle soluzioni
+
+- migliora ancora il tutto provando direttamente a rimuovere completamente il nodo precedente e provando un hitting set sul tutto
+
+- stai attento al concetto di unione degli hitting set e se serve rimuovere subito gli archi già risolti
+
+- cerca ancora un paio di euristiche diverse dal resto per vedere se hanno senso

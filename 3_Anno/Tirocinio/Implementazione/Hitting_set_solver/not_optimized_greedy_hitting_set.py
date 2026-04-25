@@ -1,24 +1,26 @@
+import time
 from hypergraphx import Hypergraph
 
 ### Wrapper function
-def NO_greedy_hitting_set(connections: set) -> set:
+def NO_greedy_hitting_set(connections: set) -> tuple[set, float]:
+
+    start = time.perf_counter()
 
     # I construct the starting hypergraph by adding all the edges in the temporal window to the hypergraph H
     H = Hypergraph(edge_list = connections) 
 
     # Debug print statements
-    print(f"Debug: Starting Hypergraph calculated correctly.")
-    print(f"Debug: Number of Hyperedges: {H.num_edges()}")
     print(f"Debug: NO Hitting set construction started.")
 
     # I calculate an euristical hitting set from the set of connections
     hitting_set = hitting_set_search(H)
 
-    # Debug print statements
-    print(f"Debug: NO Hitting set construction completed.")
-    print(f"Debug: NO Hitting set size: {len(hitting_set)}\n")
+    end = time.perf_counter()
 
-    return hitting_set
+    # Debug print statements
+    print(f"Debug: NO Hitting set construction completed.\n")
+
+    return (hitting_set, end - start)
 
 ### This function return the node with the maximum degree in the given hypergraph
 def find_max_degree_node(hypergraph: Hypergraph) -> int:

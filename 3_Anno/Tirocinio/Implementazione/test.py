@@ -1,11 +1,19 @@
 from hypergraphx import Hypergraph
-from optimized_greedy_hitting_set import hitting_set_search
+from hitting_set_redundancy_check import redundancy_check
 
-H = Hypergraph()
-H.add_edges([(1,2), (2,3), (3,4), (4,5)])
+archi = set()
+archi.add((1,2))
+archi.add((2,3))
+archi.add((3,4))
+archi.add((4,5))
 
-print(f"Debug: nodes: {H.get_nodes()}.")
+hitting_set = set()
+hitting_set.add(1)
+hitting_set.add(2)
+hitting_set.add(3)
+hitting_set.add(4)
+hitting_set.add(5)
 
-hitting_set = hitting_set_search(H)
+hitting_set = redundancy_check(archi,hitting_set)
 print(f"Debug: Hitting set construction completed.")
-print(f"Debug: Number of edges in the hypergraph: {hitting_set}")
+print(f"Debug: Node in the hitting set: {hitting_set}")
