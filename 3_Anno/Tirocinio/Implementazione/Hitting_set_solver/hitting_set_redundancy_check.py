@@ -1,9 +1,9 @@
 from Hitting_set_solver.smallest_arch_hitting_set import hitting_set_search
 
 ### This is the function that checks if there are nodes in the hitting set that cover only arches that are alreasy covered by other nodes in the hitting set
-def redundancy_check(arches_set: set, hitting_set: set) -> tuple[set, set]:
+def redundancy_check(hypergraph: dict, hitting_set: set) -> tuple[set, dict]:
     single_arch_cover: dict = {}
-    count_single_covered_arches(arches_set, hitting_set, single_arch_cover)
+    count_single_covered_arches(hypergraph, hitting_set, single_arch_cover)
 
     # Check if all nodes in the hitting set are covering at least one arch
     useless_nodes = set()
@@ -13,17 +13,19 @@ def redundancy_check(arches_set: set, hitting_set: set) -> tuple[set, set]:
     
     # If there are nodes that are not covering any arch, I remove them from the hitting set and I check if there are arches that are not covered by the new hitting set
     if useless_nodes:
-        print(useless_nodes)
-        print("Il risultato è sbagliato")
         hitting_set = hitting_set.difference(useless_nodes)
-        (usefull_nodes, single_arch_cover) = node_elimination(arches_set, hitting_set, useless_nodes)
+        (usefull_nodes, single_arch_cover) = node_elimination(hypergraph, hitting_set, useless_nodes)
         hitting_set = hitting_set.union(usefull_nodes)
+
+        print(f"Debug: {len(useless_nodes)-len(usefull_nodes)} Nodes has been removed from the Hitting set")
+        
     else:
-        print("Il risultato è corretto")
+        print(f"Debug: No Node has been removed from the Hitting set")
+    print(f"Debug: the hitting set has now {len(hitting_set)} nodes\n")
         
     return (hitting_set, single_arch_cover)
 
-def node_elimination(arches_set: set, hitting_set: set, useless_nodes: set) -> tuple[set, set]:
+def node_elimination(hypergraph: dict, hitting_set: set, useless_nodes: set) -> tuple[set, dict]:
     arches_not_covered = set()
     arches_possibly_double_covered = set()
 
@@ -31,18 +33,19 @@ def node_elimination(arches_set: set, hitting_set: set, useless_nodes: set) -> t
     for node in hitting_set:
         single_arch_cover[node] = 0
 
-    for arch in arches_set:
-        nodes_found = list()
-        for nodes in arch:
-            if nodes in hitting_set:
-                nodes_found.append(nodes)
-            if nodes in useless_nodes:
-                arches_possibly_double_covered.add(arch)
-        
-        if len(nodes_found) == 0:
-            arches_not_covered.add(arch)
-        elif len(nodes_found) == 1:
-            single_arch_cover[nodes_found[0]] += 1
+    for time in hypergraph:
+        for arch in hypergraph[time].get_edges():
+            nodes_found = list()
+            for nodes in arch:
+                if nodes in hitting_set:
+                    nodes_found.append(nodes)
+                if nodes in useless_nodes:
+                    arches_possibly_double_covered.add(arch)
+            
+            if len(nodes_found) == 0:
+                arches_not_covered.add(arch)
+            elif len(nodes_found) == 1:
+                single_arch_cover[nodes_found[0]] += 1
     
     small_hs = set()
     
@@ -69,19 +72,20 @@ def node_elimination(arches_set: set, hitting_set: set, useless_nodes: set) -> t
     
     return (small_hs, single_arch_cover)
 
-def count_single_covered_arches(arches_set: set, hitting_set: set, single_arch_cover: dict):
+def count_single_covered_arches(hypergraph: dict, hitting_set: set, single_arch_cover: dict):
     # I set to 0 the number of arches covered by only one node in the hitting set for each node
     for node in hitting_set:
         single_arch_cover[node] = 0
 
     # I iterate for each arch in the set of arches given
-    for arch in arches_set:
-        # I define a list to store the nodes of the hitting set that are in the current edge
-        nodes_found = list()
-        for nodes in arch:
-            if nodes in hitting_set:
-                nodes_found.append(nodes)
-        
-        # If there is just 1 nodes of the hitting set in the current arch, I update the degree of the single node found
-        if len(nodes_found) == 1:
-            single_arch_cover[nodes_found[0]] += 1
+    for time in hypergraph:
+        for arch in hypergraph[time].get_edges():
+            # I define a list to store the nodes of the hitting set that are in the current edge
+            nodes_found = list()
+            for nodes in arch:
+                if nodes in hitting_set:
+                    nodes_found.append(nodes)
+            
+            # If there is just 1 nodes of the hitting set in the current arch, I update the degree of the single node found
+            if len(nodes_found) == 1:
+                single_arch_cover[nodes_found[0]] += 1

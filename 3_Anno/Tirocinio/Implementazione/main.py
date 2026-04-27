@@ -13,6 +13,8 @@ from Hitting_set_solver.smallest_arch_hitting_set import smallest_arch_hitting_s
 from Hitting_set_solver.random_arch_hitting_set import random_arch_hitting_set
 from Hitting_set_solver.biggest_arch_hitting_set import biggest_arch_hitting_set
 
+from Hitting_set_solver.hitting_set_redundancy_check import redundancy_check
+
 
 ### This is the data decompression function, it reads a gzip file and returns a dictionary
 def file_decompression(filepath) -> list:
@@ -68,7 +70,7 @@ def temporal_hypergraph_to_arches(temporal_hypergraph: TemporalHypergraph, windo
 ### This is the function that given a set of arches, it finds the relative hitting set.
 def hitting_set_function(arches_set: set) -> set:
     # I find using different approaches some valid hitting set
-    #(mhs, tmhs) = minimal_hitting_set(arches_set)
+    (mhs, tmhs) = minimal_hitting_set(arches_set)
     #(nohs, tnohs) = NO_greedy_hitting_set(arches_set)
     #(dohs, tdohs) = DO_greedy_hitting_set(arches_set)
     #(ohs, tohs) = O_greedy_hitting_set(arches_set)
@@ -81,7 +83,7 @@ def hitting_set_function(arches_set: set) -> set:
     print(f"Debug: Number of nodes in the hypergraph: {temporal_hypergraph.num_nodes()}")
     print(f"Debug: Number of edges in the hypergraph: {len(arches_set)}")
     print("Debug: -------------------")
-    #print(f"Debug: Minimal hitting set size: {len(mhs)}, Time taken: {tmhs} seconds")
+    print(f"Debug: Minimal hitting set size: {len(mhs)}, Time taken: {tmhs} seconds")
     #print(f"Debug: Not optimized greedy hitting set size: {len(nohs)}, Time taken: {tnohs} seconds")
     #print(f"Debug: Degree optimized greedy hitting set size: {len(dohs)}, Time taken: {tdohs} seconds")
     #print(f"Debug: Optimized greedy hitting set size: {len(ohs)}, Time taken: {tohs} seconds")
@@ -93,10 +95,6 @@ def hitting_set_function(arches_set: set) -> set:
     return sahs
 
 
-### TODO: da qua in su è giusto
-
-
-
 ### This is the function that slides the temporal window and extracts the hitting set of nodes that covers all the edges in the hypergraph for each window.
 ### It is used only when the slide size is bigger than the window size, so when it's easier to recompute from zero the hitting set given an hypergraph.
 def bigger_window_slide(temporal_hypergraph: TemporalHypergraph, window_size: int, window_slide_size: int):
@@ -105,101 +103,75 @@ def bigger_window_slide(temporal_hypergraph: TemporalHypergraph, window_size: in
 
     # I iterate until i reach the end of the temporal hypergraph, for each iteration i compute the hitting set nodes and then i update the starting time of the window
     while window_starting_time <= temporal_hypergraph.max_time():
+        # Debug print statement
         print(f"Debug: Window starting at time {window_starting_time} and ending at time {window_starting_time + window_size}")
-        hitting_set = hitting_set_function(temporal_hypergraph_to_arches(temporal_hypergraph, window_size, window_starting_time))
+        
+        # I define the set of arches without repetition, i run the first hitting set algorithm and then i check the solution and delete the useless nodes
+        set_of_arches = temporal_hypergraph_to_arches(temporal_hypergraph, window_size, window_starting_time)
+        redundant_hitting_set = hitting_set_function(set_of_arches)
+        (hitting_set, single_arch_cover) = redundancy_check(set_of_arches, redundant_hitting_set)
+
+        # Debug print statement
         print(f"Debug: Window hitting set size: {len(hitting_set)}\n")
         window_starting_time += window_slide_size
     
     # Debug print statement
     print(f"Debug: You have reached the end of the temporal hypergraph")
 
-### This is the function that calculates the degree of each node in the hitting set, it returns a dictionary where the key is the node and the value is a list with the number of edges covered by only that node and the number of edges covered by more than one node in the hitting set.
-def nodes_degree_detailed(temporal_hypergraph: TemporalHypergraph, window_size: int, hitting_set: set) -> dict:
-    # I define a dictionary to store the degree of each node and I initialize it to 0 single covered nodes and 0 multiple covered nodes
-    degree_detailed: dict = {}
-    for node in hitting_set:
-        degree_detailed[node] = [0, 0]
 
-    # I extract the hypergraph of the current window
-    hypergraph = temporal_hypergraph.subhypergraph(time_window = tuple([temporal_hypergraph.min_time(), temporal_hypergraph.min_time() + window_size]))
 
-    # I iterate over every node inside every edges in the temporal hypergraph
-    for time in hypergraph:
-        for edge in hypergraph[time].get_edges():
+### TODO: da qua in su è giusto
 
-            # I define a list to store the nodes of the hitting set that are in the current edge
-            nodes_found = list()
-            for nodes in edge:
-                if nodes in hitting_set:
-                    nodes_found.append(nodes)
-            
-            # If there are more than 1 nodes of the hitting set in the current edge, I update the degree of all the nodes found, otherwise I update the degree of the single node found
-            if len(nodes_found) > 1:
-                for node in nodes_found:
-                    degree_detailed[node][1] += 1
-            else:
-                degree_detailed[nodes_found[0]][0] += 1
-    
-    for node in degree_detailed:
-        if degree_detailed[node][0] == 0:
-            hitting_set.remove(node)
-            for arch in hypergraph:
-                for node in arch:
-                    if node in hitting_set:
-                        degree_detailed[node][1] -= 1
-            degree_detailed[node][1] = 0
 
-    return degree_detailed
 ### This is the function that removes the old edges not anymore in the hypergraph and upgrades the hitting set degree.
 def remove_arches(hypergraph: dict, hitting_set: set, degree: dict) -> set:
     # I define a dictionary to store the node that have been removed
     removed_nodes = set()
 
-    # I iterate over every node inside every edges in the temporal hypergraph
+    # I iterate over every node inside every arch in the temporal hypergraph
     for time in hypergraph:
-        for edge in hypergraph[time].get_edges():
+        for arch in hypergraph[time].get_edges():
 
-            # I define a list to store the nodes of the hitting set that are in the current edge
+            # I define a list to store the nodes of the hitting set that are in the current arch
             nodes_found = list()
-            for nodes in edge:
+            for nodes in arch:
                 if nodes in hitting_set:
                     nodes_found.append(nodes)
             
-            # If there are more than 1 nodes of the hitting set in the current edge, I update the degree of all the nodes found, otherwise I update the degree of the single node found
-            if len(nodes_found) > 1:
-                for node in nodes_found:
-                    degree[node][1] -= 1
-            else:
-                degree[nodes_found[0]][0] -= 1
+            # If there only one node of the hitting set in the current edge, I update the degree of the single node found
+            if len(nodes_found) == 1:
+                degree[nodes_found[0]] -= 1
 
     for node in degree:
-        if degree[node][0] == 0:
+        if degree[node] == 0 and node in hitting_set:
             hitting_set.remove(node)
             removed_nodes.add(node)
-            degree[node][1] = 0
     
     return removed_nodes
 
-
 ### This is the function that slides the temporal window and updates the hitting set of nodes that covers all the edges in the hypergraph.
 ### It is used only when the slide size is smaller than the window size, so when it's more efficient to update the hitting set instead of recomputing it from zero.
-def smaller_window_slide(temporal_hypergraph: TemporalHypergraph, starting_hitting_set: set, window_size: int, window_slide_size: int) -> None:
+def smaller_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: set, window_size: int, window_slide_size: int, single_arch_cover: dict) -> None:
     # TODO: devo efferruare un'iterazione finchè non arrivo e supero il tempo massimo, adesso simulo un solo movimento
     # I define the starting time of the window as the minimum time of the temporal hypergraph
     window_starting_time = temporal_hypergraph.min_time()
 
-    # I check for each arch how many nodes of the HS are in it, this is useful later on
-    degree = nodes_degree_detailed(temporal_hypergraph, window_size, starting_hitting_set);
+    # TODO: start WHILE
 
     # I extract two different temporal hypergraphs, the one with the new arches and the one with the old arches and then i udate the starting time of the window
     temporal_hypergraph_old = temporal_hypergraph.subhypergraph(time_window = tuple([window_starting_time, window_starting_time + window_slide_size]))
     temporal_hypergraph_new = temporal_hypergraph.subhypergraph(time_window = tuple([window_starting_time + window_size, window_starting_time + window_slide_size + window_size]))
     window_starting_time += window_slide_size
     
-    removed_nodes = remove_arches(temporal_hypergraph_old, starting_hitting_set, degree)
+    removed_nodes = remove_arches(temporal_hypergraph_old, hitting_set, single_arch_cover)
     
-    print(f"Debug: removed nodes = {len(removed_nodes)}")
+    print(f"Debug: removed nodes = {len(removed_nodes)}, hitting set = {len(hitting_set)}")
     exit(1)
+
+    ### TODO: controlla ma penso che quello che ho fatto del conto è molto bello ma sbagliato in quanto non vengono considerati tutti quegli archi doppi che rompono dunque il cazz
+    ### Fai un check e nel caso ripristina la funzione di prima, computazionalmente parlando non penso prenda molto di più
+    ### potrei forse risolverlo sempre in hitting_set_redundancy_check, però è da vedere forse puoi aggirare il tutto all'interno del main e sbattertene il cazzo
+
     print(f"Debug: new")
     for element in temporal_hypergraph_new:
         print(temporal_hypergraph_new[element])
@@ -219,11 +191,12 @@ temporal_hypergraph = hypergraph_construction(file_decompression(sys.argv[1]))
 window_size = int(sys.argv[2])
 window_slide_size = int(sys.argv[3])
 
-# I construct the hitting set of nodes that covers all the edges in the starting hypergraph based on the temporal window size provided
-starting_hitting_set = hitting_set_function(temporal_hypergraph_to_arches(temporal_hypergraph, window_size, temporal_hypergraph.min_time()))
+# I define the set of arches without repetition, i run the first hitting set algorithm and then i check the solution and delete the useless nodes
+redundant_hitting_set = hitting_set_function(temporal_hypergraph_to_arches(temporal_hypergraph, window_size, temporal_hypergraph.min_time()))
+(hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph.subhypergraph(time_window = tuple([temporal_hypergraph.min_time(), temporal_hypergraph.min_time() + window_size])), redundant_hitting_set)
 
 # If the slide size is bigger than the window size I just extract the hitting set for each window, otherwise I have to update the hitting set by adding the new edges and removing the old edges
 if window_slide_size < window_size:
-    smaller_window_slide(temporal_hypergraph, starting_hitting_set, window_size, window_slide_size)
+    smaller_window_slide(temporal_hypergraph, hitting_set, window_size, window_slide_size, single_arch_cover)
 else:
     bigger_window_slide(temporal_hypergraph, window_size, window_slide_size)

@@ -1,16 +1,17 @@
 from hypergraphx import Hypergraph
-from hitting_set_redundancy_check import redundancy_check
+from Hitting_set_solver.hitting_set_redundancy_check import redundancy_check
 
-archi = set()
-archi.add((1,2))
-archi.add((2,3))
-archi.add((3,4))
-archi.add((4,5))
+archi = list()
+archi.append((1,2))
+archi.append((2,3,4))
+archi.append((2,5,6))
+archi.append((5,8))
+archi.append((4,9))
+archi.append((1,7))
 
 hitting_set = set()
 hitting_set.add(1)
 hitting_set.add(2)
-hitting_set.add(3)
 hitting_set.add(4)
 hitting_set.add(5)
 
