@@ -2,7 +2,7 @@ import gzip
 import json
 import sys
 from typing import Counter
-from hypergraphx import TemporalHypergraph, Hypergraph
+from hypergraphx import TemporalHypergraph, Hypergraph # type: ignore
 
 from Hitting_set_solver.minimal_hitting_set import minimal_hitting_set
 
@@ -189,10 +189,14 @@ def bigger_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: se
         set_of_arches = dict_to_set_of_arches(temporal_hypergraph_slice)
         redundant_hitting_set = complete_hypergraph_hitting_set_function(set_of_arches, ["sahs"])
         (hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
-        
+
         # I shift effectivelly the window starting time
         window_starting_time += window_slide_size
         
+        # The following lines of code are usefull in order to benchmark the results receaved from the code above
+        print("\n------ Benchmark -------")
+        redundant_hitting_set = complete_hypergraph_hitting_set_function(set_of_arches, ["mhs"])
+        redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
         print("------------------------\n\n")
 
     print(f"You have reached the end of the temporal hypergraph")
@@ -301,8 +305,8 @@ def smaller_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: s
         # The following lines of code are usefull in order to benchmark the results receaved from the code above
         print("\n------ Benchmark -------")
         redundant_hitting_set = complete_hypergraph_hitting_set_function(dict_to_set_of_arches(dizionario), ["sahs"])#["mhs", "sahs"])
+        #redundancy_check(dizionario, redundant_hitting_set[0])
         redundancy_check(dizionario, redundant_hitting_set[0])
-        #redundancy_check(dizionario, redundant_hitting_set[1])
         print("------------------------\n\n")
 
     print(f"You have reached the end of the temporal hypergraph")
@@ -331,6 +335,7 @@ print("- Starting Hitting Set -")
 temporal_hypergraph_slice = temporal_hypergraph_to_dict(temporal_hypergraph, temporal_hypergraph.min_time(), temporal_hypergraph.min_time()+window_size)
 redundant_hitting_set = complete_hypergraph_hitting_set_function(dict_to_set_of_arches(temporal_hypergraph_slice), ["sahs"])
 (hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
+
 
 print("-----------------------\n")
 
