@@ -112,7 +112,7 @@ def complete_hypergraph_hitting_set_function(arches_set: set, algorithms: list[s
                 print(f"Debug: Algorithm {algo}, does not exist")
 
         results_list.append(hs)
-        #print(f"Debug: Complete hitting set size: {len(hs)}, Time taken: {ths} seconds")
+        print(f"Debug: Complete hitting set size: {len(hs)}, Time taken: {ths} seconds")
 
     # Debug Print
     # print("Debug: -----------------------\n")
@@ -258,12 +258,12 @@ def window_slide_function(temporal_hypergraph: TemporalHypergraph, hitting_set: 
             temporal_hypergraph_dict = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time, window_starting_time + window_slide_size + window_size)
             
             # and then I remove them from the temporal window checking at the same time if I can reduce the hitting set size
-            old_temporal_hypergraph_slice = dict(takewhile(lambda item: item[0] <= window_starting_time + window_slide_size, temporal_hypergraph_dict.items()))
+            old_temporal_hypergraph_slice = {k: temporal_hypergraph_dict[k] for k in range(window_starting_time, window_starting_time + window_slide_size + 1) if k in temporal_hypergraph_dict}
 
             remove_arches(old_temporal_hypergraph_slice, hitting_set, single_arch_cover)
 
             # I extract the new arches from the temporal hypergraph in order to find an Hitting set of those arches
-            new_hypergraph_arches = dict_to_set_of_arches(dict(dropwhile(lambda x: x[0] <= window_starting_time + window_size, temporal_hypergraph_dict.items())))
+            new_hypergraph_arches = dict_to_set_of_arches({k: temporal_hypergraph_dict[k] for k in range(window_starting_time + window_size + 1, window_starting_time + window_slide_size + window_size + 1) if k in temporal_hypergraph_dict})
             
             # I clean the hypergraph deleting the arches already covered by the Hitting Set
             not_covered_arches = clean_up_and_arch_division(new_hypergraph_arches, hitting_set, node_presence_into_hs)
@@ -273,7 +273,7 @@ def window_slide_function(temporal_hypergraph: TemporalHypergraph, hitting_set: 
             redundant_hitting_set = hitting_set.union(new_nodes_hitting_set[0])
 
             # I check the newly discovered hitting set and i remove the useless nodes
-            dizionario = dict(dropwhile(lambda x: x[0] <= window_starting_time + window_slide_size, temporal_hypergraph_dict.items()))
+            dizionario = {k: temporal_hypergraph_dict[k] for k in range(window_starting_time + window_slide_size + 1, window_starting_time + window_slide_size + window_size + 1) if k in temporal_hypergraph_dict}
             (hitting_set, single_arch_cover) = redundancy_check(dizionario, redundant_hitting_set)
 
         global med
