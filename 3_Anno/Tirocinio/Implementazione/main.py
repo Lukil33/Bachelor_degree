@@ -1,6 +1,8 @@
 import gzip
+from itertools import dropwhile, takewhile
 import json
 import sys
+import time
 from typing import Counter
 from hypergraphx import TemporalHypergraph, Hypergraph # type: ignore
 
@@ -15,6 +17,12 @@ from Hitting_set_solver.random_arch_hitting_set import complete_random_arch_hitt
 from Hitting_set_solver.biggest_arch_hitting_set import complete_biggest_arch_hitting_set, partial_biggest_arch_hitting_set
 
 from Hitting_set_solver.hitting_set_redundancy_check import redundancy_check
+
+from media import MediaMobile
+
+
+med = MediaMobile()
+num_elem_nuovi = 0
 
 
 ### This is the data decompression function, it reads a gzip file and returns a dictionary
@@ -87,36 +95,25 @@ def complete_hypergraph_hitting_set_function(arches_set: set, algorithms: list[s
     for algo in algorithms:
         match algo:
             case "mhs":
-                (mhs, tmhs) = minimal_hitting_set(arches_set)
-                results_list.append(mhs)
-                print(f"Debug: Minimal hitting set size: {len(mhs)}, Time taken: {tmhs} seconds")
+                (hs, ths) = minimal_hitting_set(arches_set)
             case "nohs":
-                (nohs, tnohs) = NO_greedy_hitting_set(arches_set)
-                results_list.append(nohs)
-                print(f"Debug: Not optimized greedy hitting set size: {len(nohs)}, Time taken: {tnohs} seconds")
+                (hs, ths) = NO_greedy_hitting_set(arches_set)
             case "dohs":
-                (dohs, tdohs) = DO_greedy_hitting_set(arches_set)
-                results_list.append(dohs)
-                print(f"Debug: Degree optimized greedy hitting set size: {len(dohs)}, Time taken: {tdohs} seconds")
+                (hs, ths) = DO_greedy_hitting_set(arches_set)
             case "ohs":
-                (ohs, tohs) = O_greedy_hitting_set(arches_set)
-                results_list.append(ohs)
-                print(f"Debug: Optimized greedy hitting set size: {len(ohs)}, Time taken: {tohs} seconds")
+                (hs, ths) = O_greedy_hitting_set(arches_set)
             case "bahs":
-                (bahs, tbahs) = complete_biggest_arch_hitting_set(arches_set)
-                results_list.append(bahs)
-                print(f"Debug: Biggest arch hitting set size: {len(bahs)}, Time taken: {tbahs} seconds")
+                (hs, ths) = complete_biggest_arch_hitting_set(arches_set)
             case "rahs":
-                (rahs, trahs) = complete_random_arch_hitting_set(arches_set)
-                results_list.append(rahs)
-                print(f"Debug: Random arch hitting set size: {len(rahs)}, Time taken: {trahs} seconds")
+                (hs, ths) = complete_random_arch_hitting_set(arches_set)
             case "sahs":
-                (sahs, tsahs) = complete_smallest_arch_hitting_set(arches_set)
-                results_list.append(sahs)
-                print(f"Debug: Smallest arch hitting set size: {len(sahs)}, Time taken: {tsahs} seconds")
+                (hs, ths) = complete_smallest_arch_hitting_set(arches_set)
             case _:
                 print(f"Debug: Algorithm {algo}, does not exist")
-    
+
+        results_list.append(hs)
+        #print(f"Debug: Complete hitting set size: {len(hs)}, Time taken: {ths} seconds")
+
     # Debug Print
     # print("Debug: -----------------------\n")
 
@@ -133,73 +130,33 @@ def partial_hypergraph_hitting_set_function(arches_set: set, not_covered_arches_
 
     # I find using different approaches some valid hitting set
     for algo in algorithms:
+        hs = 0
+        ths = 0
         match algo:
             case "mhs":
-                (mhs, tmhs) = minimal_hitting_set(arches_set)
-                results_list.append(mhs)
-                print(f"Debug: Minimal hitting set size: {len(mhs)}, Time taken: {tmhs} seconds")
+                (hs, ths) = minimal_hitting_set(arches_set)
             case "nohs":
-                (nohs, tnohs) = NO_greedy_hitting_set(arches_set)
-                results_list.append(nohs)
-                print(f"Debug: Not optimized greedy hitting set size: {len(nohs)}, Time taken: {tnohs} seconds")
+                (hs, ths) = NO_greedy_hitting_set(arches_set)
             case "dohs":
-                (dohs, tdohs) = DO_greedy_hitting_set(arches_set)
-                results_list.append(dohs)
-                print(f"Debug: Degree optimized greedy hitting set size: {len(dohs)}, Time taken: {tdohs} seconds")
+                (hs, ths) = DO_greedy_hitting_set(arches_set)
             case "ohs":
-                (ohs, tohs) = O_greedy_hitting_set(arches_set)
-                results_list.append(ohs)
-                print(f"Debug: Optimized greedy hitting set size: {len(ohs)}, Time taken: {tohs} seconds")
+                (hs, ths) = O_greedy_hitting_set(arches_set)
             case "bahs":
-                (bahs, tbahs) = partial_biggest_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
-                results_list.append(bahs)
-                print(f"Debug: Biggest arch hitting set size: {len(bahs)}, Time taken: {tbahs} seconds")
+                (hs, ths) = partial_biggest_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
             case "rahs":
-                (rahs, trahs) = partial_random_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
-                results_list.append(rahs)
-                print(f"Debug: Random arch hitting set size: {len(rahs)}, Time taken: {trahs} seconds")
+                (hs, ths) = partial_random_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
             case "sahs":
-                (sahs, tsahs) = partial_smallest_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
-                results_list.append(sahs)
-                print(f"Debug: Smallest arch hitting set size: {len(sahs)}, Time taken: {tsahs} seconds")
+                (hs, ths) = partial_smallest_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
             case _:
                 print(f"Debug: Algorithm {algo}, does not exist")
+
+        results_list.append(hs)
+        #print(f"Debug: Partial hitting set size: {len(hs)}, Time taken: {ths} seconds")
     
     # Debug Print
     # print("Debug: -----------------------\n")
 
     return results_list
-
-
-### This is the function that slides the temporal window and extracts the hitting set of nodes that covers all the edges in the hypergraph for each window.
-### It is used only when the slide size is bigger than the window size, so when it's easier to recompute from zero than to compute the slide difference of the entire hypergraph.
-def bigger_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: set, window_size: int, window_slide_size: int):
-    # I define the starting time of the window as the minimum time of the temporal hypergraph
-    window_starting_time = temporal_hypergraph.min_time()
-
-    # I iterate until i reach the end of the temporal hypergraph, for each iteration i compute the hitting set nodes and then i update the starting time of the window
-    while window_starting_time+window_size <= temporal_hypergraph.max_time():
-
-        print("--- New window Shift ---")
-        print(f"From [{window_starting_time},{window_starting_time+window_size}] to [{window_starting_time+window_slide_size}, {window_starting_time+window_size+window_slide_size}]")
-        print(f"Starting Hitting Set Size: {len(hitting_set)}\n")
-
-        # I define the set of arches without repetition, i run the first hitting set algorithm and then i check the solution and delete the useless nodes
-        temporal_hypergraph_slice = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time+window_slide_size, window_starting_time+window_slide_size+window_size)
-        set_of_arches = dict_to_set_of_arches(temporal_hypergraph_slice)
-        redundant_hitting_set = complete_hypergraph_hitting_set_function(set_of_arches, ["sahs"])
-        (hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
-
-        # I shift effectivelly the window starting time
-        window_starting_time += window_slide_size
-        
-        # The following lines of code are usefull in order to benchmark the results receaved from the code above
-        print("\n------ Benchmark -------")
-        redundant_hitting_set = complete_hypergraph_hitting_set_function(set_of_arches, ["mhs"])
-        redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
-        print("------------------------\n\n")
-
-    print(f"You have reached the end of the temporal hypergraph")
 
 
 ### This is the function that upgrade the dictionary that contains the last time a certain node has been part of the hitting set
@@ -259,8 +216,7 @@ def clean_up_and_arch_division(arches_set: set, hitting_set: set, node_presence_
     # I return the set of arches that contains only the arches that do not contain nodes eather from the HS that from nodes previously in the HS
     return arches_set.difference(rnHS_covered_arches)
 ### This is the function that slides the temporal window and updates the hitting set of nodes that covers all the edges in the hypergraph.
-### It is used only when the slide size is smaller than the window size, so when it's more efficient to update the hitting set instead of recomputing it from zero.
-def smaller_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: set, window_size: int, window_slide_size: int, single_arch_cover: dict) -> None:
+def window_slide_function(temporal_hypergraph: TemporalHypergraph, hitting_set: set, window_size: int, window_slide_size: int, single_arch_cover: dict) -> None:
     # I define the starting time of the window as the minimum time of the temporal hypergraph
     window_starting_time = temporal_hypergraph.min_time()
 
@@ -276,46 +232,67 @@ def smaller_window_slide(temporal_hypergraph: TemporalHypergraph, hitting_set: s
         print(f"From [{window_starting_time},{window_starting_time+window_size}] to [{window_starting_time+window_slide_size}, {window_starting_time+window_size+window_slide_size}]")
         print(f"Starting Hitting Set Size: {len(hitting_set)}\n")
 
+        global num_elem_nuovi
+
+        for elem in hitting_set:
+            if node_presence_into_hs[elem] == 0:
+                num_elem_nuovi += 1
+
         # I update the counter of the last time at which each node has been present into the Hitting Set
         update_node_presence(node_presence_into_hs, hitting_set, window_starting_time + window_size)
 
-        # I extract the old arches from the temporal hypergraph and then I remove them from the temporal window checking at the same time if I can reduce the hitting set size
-        old_temporal_hypergraph_slice = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time, window_starting_time + window_slide_size)
-        remove_arches(old_temporal_hypergraph_slice, hitting_set, single_arch_cover)
+        if window_size<=window_slide_size:
+        #if window_size<=window_slide_size or True:
+            # I define the set of arches without repetition
+            temporal_hypergraph_slice = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time+window_slide_size, window_starting_time+window_slide_size+window_size)
+            set_of_arches = dict_to_set_of_arches(temporal_hypergraph_slice)
 
-        # I extract the new arches from the temporal hypergraph in order to find an Hitting set of those arches
-        new_hypergraph_arches = dict_to_set_of_arches(temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time + window_size, window_starting_time + window_slide_size + window_size))
+            # I run the offline hitting set algorithm
+            redundant_hitting_set = complete_hypergraph_hitting_set_function(set_of_arches, ["sahs"])
+
+            # I check the newly discovered hitting set and i remove the useless nodes
+            (hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
         
-        # I clean the hypergraph deleting the arches already covered by the Hitting Set
-        not_covered_arches = clean_up_and_arch_division(new_hypergraph_arches, hitting_set, node_presence_into_hs)
+        else:
+            # I extract all the usefull arches from the temporal hypergraph 
+            temporal_hypergraph_dict = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time, window_starting_time + window_slide_size + window_size)
+            
+            # and then I remove them from the temporal window checking at the same time if I can reduce the hitting set size
+            old_temporal_hypergraph_slice = dict(takewhile(lambda item: item[0] <= window_starting_time + window_slide_size, temporal_hypergraph_dict.items()))
 
-        # I calculate the hitting set for the new arches
-        new_nodes_hitting_set = partial_hypergraph_hitting_set_function(new_hypergraph_arches, not_covered_arches, node_presence_into_hs, ["sahs"])
+            remove_arches(old_temporal_hypergraph_slice, hitting_set, single_arch_cover)
 
-        # I define the redundant hitting set as the union of the one from the newly added arches and the one that i had before
-        redundant_hitting_set = hitting_set.union(new_nodes_hitting_set[0])
+            # I extract the new arches from the temporal hypergraph in order to find an Hitting set of those arches
+            new_hypergraph_arches = dict_to_set_of_arches(dict(dropwhile(lambda x: x[0] <= window_starting_time + window_size, temporal_hypergraph_dict.items())))
+            
+            # I clean the hypergraph deleting the arches already covered by the Hitting Set
+            not_covered_arches = clean_up_and_arch_division(new_hypergraph_arches, hitting_set, node_presence_into_hs)
+
+            # I calculate the hitting set for the new arches and i update the hitting set
+            new_nodes_hitting_set = partial_hypergraph_hitting_set_function(new_hypergraph_arches, not_covered_arches, node_presence_into_hs, ["sahs"])
+            redundant_hitting_set = hitting_set.union(new_nodes_hitting_set[0])
+
+            # I check the newly discovered hitting set and i remove the useless nodes
+            dizionario = dict(dropwhile(lambda x: x[0] <= window_starting_time + window_slide_size, temporal_hypergraph_dict.items()))
+            (hitting_set, single_arch_cover) = redundancy_check(dizionario, redundant_hitting_set)
+
+        global med
+        med.aggiungi(len(hitting_set))
 
         # I shift effectivelly the window starting time
         window_starting_time += window_slide_size
 
-        # I check the newly discovered hitting set and i remove the useless nodes
-        dizionario = temporal_hypergraph_to_dict(temporal_hypergraph, window_starting_time, window_starting_time + window_size)
-        (hitting_set, single_arch_cover) = redundancy_check(dizionario, redundant_hitting_set)
-        
-        # The following lines of code are usefull in order to benchmark the results receaved from the code above
-        print("\n------ Benchmark -------")
-        redundant_hitting_set = complete_hypergraph_hitting_set_function(dict_to_set_of_arches(dizionario), ["sahs"])#["mhs", "sahs"])
-        #redundancy_check(dizionario, redundant_hitting_set[0])
-        redundancy_check(dizionario, redundant_hitting_set[0])
-        print("------------------------\n\n")
+        print("-----------------------\n\n")
 
     print(f"You have reached the end of the temporal hypergraph")
 
 
 ### Main function
-if len(sys.argv) != 3 and len(sys.argv) != 4: # Input format check
+start = time.perf_counter()
+
+if len(sys.argv) != 4: # Input format check
     print(f"Error: input format is incorrect.")
-    print("Usage: uv run <file_name.py> <dataset.json.gz> <temporal_window_size(in seconds)> <optional: temporal_window_slide_size(in seconds)>")
+    print("Usage: uv run <file_name.py> <dataset.json.gz> <temporal_window_size> <temporal_window_slide_size>")
     exit(-1)
 
 # I construct the temporal hypergraph and the list of arrival times of the edges in the dataset based on the decompressed data from the input file
@@ -336,11 +313,11 @@ temporal_hypergraph_slice = temporal_hypergraph_to_dict(temporal_hypergraph, tem
 redundant_hitting_set = complete_hypergraph_hitting_set_function(dict_to_set_of_arches(temporal_hypergraph_slice), ["sahs"])
 (hitting_set, single_arch_cover) = redundancy_check(temporal_hypergraph_slice, redundant_hitting_set[0])
 
+print("-----------------------\n\n")
 
-print("-----------------------\n")
+window_slide_function(temporal_hypergraph, hitting_set, window_size, window_slide_size, single_arch_cover)
 
-# If the slide size is bigger than the window size I just extract the hitting set for each window, otherwise I have to update the hitting set by adding the new edges and removing the old edges
-if window_slide_size < window_size:
-    smaller_window_slide(temporal_hypergraph, hitting_set, window_size, window_slide_size, single_arch_cover)
-else:
-    bigger_window_slide(temporal_hypergraph, hitting_set, window_size, window_slide_size)
+end = time.perf_counter()
+print(f"Time taken: {end-start}")
+print(f"Dimensione media HS: {med.media()}")
+print(f"Numero elementi nuovi: {num_elem_nuovi}")
