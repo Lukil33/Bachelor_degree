@@ -11,6 +11,7 @@ from Hitting_set_solver.degree_optimization_greedy_hitting_set import DO_greedy_
 from Hitting_set_solver.optimized_greedy_hitting_set import O_greedy_hitting_set
 
 from Hitting_set_solver.smallest_arch_hitting_set import complete_smallest_arch_hitting_set, partial_smallest_arch_hitting_set
+from Hitting_set_solver.smallest_arch_hitting_set_no_reuse import complete_smallest_arch_no_reuse_hitting_set, partial_smallest_arch_no_reuse_hitting_set
 from Hitting_set_solver.random_arch_hitting_set import complete_random_arch_hitting_set, partial_random_arch_hitting_set
 from Hitting_set_solver.biggest_arch_hitting_set import complete_biggest_arch_hitting_set, partial_biggest_arch_hitting_set
 
@@ -106,6 +107,8 @@ def complete_hypergraph_hitting_set_function(arches_set: set, algorithms: list[s
                 (hs, ths) = complete_random_arch_hitting_set(arches_set)
             case "sahs":
                 (hs, ths) = complete_smallest_arch_hitting_set(arches_set)
+            case "sanrhs":
+                (hs, ths) = complete_smallest_arch_no_reuse_hitting_set(arches_set)
             case _:
                 print(f"Debug: Algorithm {algo}, does not exist")
 
@@ -147,6 +150,8 @@ def partial_hypergraph_hitting_set_function(arches_set: set, not_covered_arches_
                 (hs, ths) = partial_random_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
             case "sahs":
                 (hs, ths) = partial_smallest_arch_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
+            case "sanrhs":
+                (hs, ths) = partial_smallest_arch_no_reuse_hitting_set(arches_set, not_covered_arches_set, node_presence_into_hs)
             case _:
                 print(f"Debug: Algorithm {algo}, does not exist")
 

@@ -1,0 +1,21 @@
+mock_data_time = {
+    'greedy_algorithm': [63.32, 38.89, 66.19],
+    'window_random': [70.50, 57.71, 71.79],
+    'window_no_reuse': [70.87, 58.30, 69.79],
+    'window_with_reuse': [70.67, 58.22, 69.77]
+}
+mock_data_size = {
+    'greedy_algorithm': [277834, 266322, 199312],
+    'window_random': [277853, 266324, 199321],
+    'window_no_reuse': [277857, 266332, 199331],
+    'window_with_reuse': [277850, 266328, 199319]
+}
+mock_data_reuse = {
+    'greedy_algorithm': [719129, 717382, 719474],
+    'window_random': [717994, 716709, 718034],
+    'window_no_reuse': [718431, 717527, 719160],
+    'window_with_reuse': [717976, 716718, 718018]
+}
+
+window_size = ["100", "100", "60"]
+slide_size = ["20", "80", "20"]
