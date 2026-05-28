@@ -34,9 +34,8 @@
 % List
 \usepackage{enumitem}
 
-% START: DELETE ME
-\usepackage{lipsum}
-% END: DELETE ME
+% --- Matematica ---
+\usepackage{amsmath, amssymb, amsthm}
 
 % Document
 \begin{document}
@@ -45,8 +44,6 @@
   \input{etc/cover}
   \clearpage
 
-  % Acknowledgements
-  \input{etc/acknowledgements}
   \clearpage
   \pagestyle{plain}
 
@@ -71,13 +68,16 @@
   \titlespacing*{\subsubsection}{0pt}{0.05in}{0.02in}
 
   % Abstract
-  \input{etc/abstract.tex}
+  \input{Chapters/Abstract/abstract.tex}
 
   % Chapters
-  \input{chapters/examples.tex}
+  \input{Chapters/Introduction/introduction.tex}
+  \input{Chapters/Background/background.tex}
+  \input{Chapters/Proposed_Approach/proposed_approach.tex}
+  \input{Chapters/Experimental_evaluation/experimental_evaluation.tex}
 
   % Conclusions
-  \input{etc/conclusions.tex}
+  \input{Chapters/Conclusions/conclusions.tex}
 
   \endgroup
 
@@ -91,4 +91,8 @@
   \titleformat{\chapter} {\normalfont\Huge\bfseries}{Appendix \thechapter}{1em}{}
   \appendix
   \input{attachments/attachment.tex}
+
+  % Acknowledgements
+  \input{etc/acknowledgements}
+
 \end{document}
