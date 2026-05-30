@@ -1,0 +1,33 @@
+Define the concept of "CIA Triad":
+    Quando si parla di CIA Triad ci si sta riferendo ad uno dei più importanti concetti di alto livello presenti nel campo della Cybersecurity.
+    CIA sta per Confidenciality, Integrity and Availability, i quali sono considerati basi fondanti per la sicurezza delle informazioni.
+    
+    La Confidenciality è la proprietà che stabilisce che un'informazione deve poter risultare accessibile solo alle persone che hanno il relativo accesso ad essa.
+    L'Integrity è la proprietà che garantisce che un'informazione non deve poter essere modificata o manomessa da nessuna persona che non ne abbia la possibilità.
+    L'Availability infine è la proprietà che mi garantisce di poter accedere come e quando voglio ad un informazione alla quale dovrei avere la possibilità di accedere.
+
+    Al fine di poter definire un'informazione "sicura" dovrei avere la possiblità di garantire in equal misura tutte e tre le seguenti proprietà.
+
+Define the concept of “Security policy” and give an example:
+    Quando si parla di "Security policy” si intende un'insieme di regole definite da un'organizzazione con lo scopo finale di garantire la CIA triad.
+    Questo insieme di regole definisce come gli utenti dovrebbero poter utilizzare ed avere accesso alle informazioni in modo da poterne garantire rispettivamente la Confidentiality, l'integrity e l'availability.
+    Un'esempio di Security Policy può essere l'insieme di regole che un'utente deve rispettare quando scegli una password, del tipo la pwd deve avere lunghezza > 10, oppure deve essere sia lettere che numeri.
+
+Define the concept of “Security mechanism” and give an example:
+    Un Security Mechanism è un dispositivo o una funzionalità che ha lo scopo di implementare una o più security policy.
+    Vengono valutate in base alla sicurezza e alla semplicità di implementazione oltre che al numero di secrity policy che serve a coprire.
+    Un sistema di Access Control può essere un esempio, oppure una sendbox per i sistemi operativi
+
+Define the concept of "Authentication"; list and explain the three main classes of authentication factors that can be used in the process and give a concrete example for each of them:
+    Quando si parla di Authenticationze a tutti quanti solitamente viene in mente la classica password che si deve inserire quando si accede al cellulare oppure quando si effettua una transazione tramite una carta di credito, però il tutto è solo 1 dei 3 metodi disponibili di autenticazione.
+    I precedenti esempi di autenticazione infatti rappresentano solo alcuni dei più semplici metodi di autenticazione in quanto si compongono di single-factors-authenticator, ovvero di metodi che verificano una sola delle classi di autenticazione disponibili.
+    Queste classi sono rispettivamente:
+        Un qualcosa che sai (es. Password)
+        Un qualcosa che possiedi (es. CIE, chiave fisica)
+        Un qualcosa che sei (es. Impronta digitale, Scansione dell'Iride)
+    Qualora servisse aumentare il livello di sicurezza del metodo di autenticazione si può cominciare a parlare di multi factor authentication o di una sua sottoclasse più famosa ovvero la two factor authentication (utilizzata all'interno dell'ecosistema CIE)
+
+What is a password? Characterize what it means for a password to be strong and weak
+    Una Password è una stringa composta da numeri, lettere, caratteri o da una composizione delle 3 classi precedenti che compongono un codice univoco con lo scopo di verificare al sistema la veridicità dell'utente.
+    Secondo la definizione fornita dal NIST una password forte è una password che è allo stesso tempo difficile da indovinare ma facile da ricordare, cercando però di evitare password comunemente utilizzate (come password, admin o 1234).
+    
