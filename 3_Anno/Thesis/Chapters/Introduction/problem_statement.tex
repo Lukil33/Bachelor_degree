@@ -1,5 +1,24 @@
-% Da completare
+% Bisogna aggiungere almeno 1 o 2 citazioni
 
 \section{Problem Statement}\label{sec:problem_statement}
 
-When taking in accounting dynamic context 
+When analyzing systems characterized by collective interactions, it is often necessary to find a restricted set of elements aimed at controlling, representing, or covering the entirety of the interactions present in the system.
+Some of the most famous problems in theoretical computer science defined on graphs and hypergraphs focus precisely on finding a minimum subset of elements that satisfies a given property. Among the most famous examples are the \textit{vertex cover} and the \textit{set cover} problems, optimization problems in which the objective is to minimize, respectively, the number of edges and nodes required to cover all the remaining elements, famous for their computational complexity belonging to NP-hard problems ~\cite{gomes2006}.
+Unlike the previous problems, in this work, the interactions are not static but evolve over time, and furthermore, only hypergraphs are considered as data structures.
+Consequently, the objective consists not exclusively in determining a globally optimal solution, but rather in maintaining a valid solution over time that can be efficiently updated as interactions change, avoiding the need to fully recalculate it at every modification of the system.
+To describe it more precisely, the problem addressed in this work consists in maintaining a set of nodes that can cover all the interactions represented by the active hyperedges of a temporal hypergraph.
+The solution must therefore adapt dynamically to the evolution of the structure, maintaining the coverage property.
+In addition to the average size of the solution, further evaluation criteria are also considered.
+To have a solution that is valid not only in a theoretical context but also in a practical one, consideration is given both to the execution time required to update the solution as interactions change, and to the total number of distinct nodes that become part of the selected set during the evolution of the hypergraph.
+All this is to ensure that the solution allows for the fewest total modifications and that it is effectively usable even in real-world contexts, where the speed of updating the solution is also required, in addition to its correctness.
+
+% TESTO ORIGINALE: si, sto utilizzando per la traduzione Gemini (però senza cambiare nulla)
+% Quando si analizzano sistemi caratterizzati da interazioni collettive, risulta spesso necessario riuscire a trovare un insieme ristretto di elementi che hanno lo scopo di controllare, rappresentare o coprire l'insieme delle interazioni presenti nel sistema.
+% Alcuni tra i problemi più famosi dell'informatica teorica definiti su grafi e ipergrafi si concentranosi concentrano proprio sulla ricerca di un sottoinsieme minimo di elementi che soddisfi una determinata proprietà. Tra i più famosi esempi si possono citare il problema del \textit{vertex cover} e quello del \textit{set cover}, problemi di ottimizzazione nei quali l'obbiettivo è quello di minimizzare rispettivamente il numero di archi e di nodi necessari a coprire tutti i restanti elementi, famosi per la loro complessità computazionale appartenente ai problemi NP-hard ~\cite{gomes2006}.
+% A differenza dei problemi precedenti in questo lavoro, le interazioni non sono statiche ma evolvono nel tempo e inoltre si considerano come strutture dati unicamente gli ipergrafi.
+% Di conseguenza, l'obiettivo non consiste esclusivamente nel determinare una soluzione globalmente ottimale, bensì nel mantenere nel tempo una soluzione valida che possa essere aggiornata in modo efficiente al variare delle interazioni, evitando di doverla ricalcolare completamente a ogni modifica del sistema.
+% Per descriverlo in modo più preciso, il problema affrontato in questo lavoro consiste nel mantenere un insieme di nodi che riesca a coprire tutte le interazioni rappresentate dagli iperarchi attivi di un ipergrafo temporale.
+% La soluzione deve quindi adattarsi dinamicamente all'evoluzione della struttura, mantenendo la proprietà di copertura.
+% Oltre alla dimensione media della soluzione, vengono inoltre considerati ulteriori criteri di valutazione.
+% Per avere una soluzione che sia valida non solo in ambito teorico ma anche in ambito pratico, viene preso in considerazione sia il tempo di esecuzione necessario per aggiornare la soluzione al variare delle interazioni, che il numero totale di nodi distinti che entrano a far parte dell'insieme selezionato durante l'evoluzione dell'ipergrafo.
+% Tutto ciò per garantire che la soluzione permetta il minor numero di modifiche totali e che sia effettivamente utilizzabile anche in contesti reali, dove è necessaria anche la velocità di aggiornamento della soluzione, oltre alla sua correttezza.

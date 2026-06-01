@@ -16,3 +16,6 @@ target/
 *.ist
 *.acn
 *.mp4
+*.blg
+*.toc
+*.xmpi

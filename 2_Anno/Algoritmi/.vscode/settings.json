@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "unordered_map": "cpp",
-        "string_view": "cpp",
-        "iosfwd": "cpp"
-    }
-}

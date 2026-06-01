@@ -30,4 +30,80 @@ Define the concept of "Authentication"; list and explain the three main classes 
 What is a password? Characterize what it means for a password to be strong and weak
     Una Password è una stringa composta da numeri, lettere, caratteri o da una composizione delle 3 classi precedenti che compongono un codice univoco con lo scopo di verificare al sistema la veridicità dell'utente.
     Secondo la definizione fornita dal NIST una password forte è una password che è allo stesso tempo difficile da indovinare ma facile da ricordare, cercando però di evitare password comunemente utilizzate (come password, admin o 1234).
+    Contrariamente a quello che si può regolarmente pensare, per una password non è più necessario contere caratteri speciali, è anzi considerata una bad practice utilizzare una sola parola difficile da ricordare con caratteri speciali all'interno.
+    Una password non ha un tempo di scadenza, però dovrebbe venir cambiata nel momento in cui si pensa che questa possa essere stata scoperta d qualcuno.
+    Una password debole è invece una password semplice da indovinare, che utilizza quindi parole comuni pittosto che parole corte o combinazioni di soli numeri o soli caratteri.
+
+What is a brute force guessing attack? How can it be mitigated?
+    Il Brute force attack è una metodologia di attacco che consiste nel provare tutte le tipologie di combinazioni possibili finchè non si arriva al raggiungimento dell'obbiettivo.
+    Viene utilizzato con lo scopo di individuare la password di un'utente provando tutte le password disponibili fino a quando il sistema non ne permette l'accesso (ovvero finchè non si trova la password).
+    Per mitigare un'attacco simile ci sono diverse metodologie: se si sta parlando in un contesto online (sito web) si può semplicemente inserire un limite di password che si possono provare.
+    Questa tipologia di mitigazione però può essere superata scaricando il database delle password, in quel caso, supponendo che tale database sia sicuro e l'attaccante non riesca dunque a ricavare la password direttamente dal database, l'unica vera mitigazione esistente è il numero di combinazioni che l'attaccante deve effettuare.
+    Se una password di lunghezza 4 semplicemente numerica contiene solamente 10^4 combinazinoni possibili, una password di lunghezza 8 contenente caratteri minuscoli, maiuscoli e numeri contiene (26+26+10)^8 combinazioni.
+    All'aumentare del numero di combinazioni necessarie per sbloccare la password aumenta anche il tempo e la potenza di calcolo necessaria da una computer per utilizzare la metodologia di attacco Brute Force su quella password.
+
+Define the concept of “Cryptographic hash function” with at least three key properties. Also, give an example of a widely used standard cryptographic hash function currently used.
+    Una cryptographic hash function è una funzione di hash che è utilizzabile in ambito crittografico, affinchè una funzione simile lo sia deve rispettare una serie di regole che ne definiscono il comportamentoò
+    Prima di definire cosa rende una hash function tale bisogna definire per cosa vengono utilizzate e a cosa servono.
+    Una hash Function è una funzione che fornita una chiave in input definisce in modo univoco un digest in modo da poter salvare le password o più in generale informazioni private in modo da rispettare la Confidenciality dell'informazione.
+    Per riuscire a garantire ciò e per poter essere utilizzata in criptografia la nostra funzione deve rispettare diverse caratteristiche per rendere l'operazione di hashing crittograficamente valida.
+    Tale funzione deve contenere le seguenti caratteristiche:
+        La funzione deve essere deterministica, ovvero ogni volta che si inserirà la stessa chiave k il digest fornito deve sempre risultare lo stesso.
+        A prescindere dalla lunghezza della chiave fornita in input la lunghezza del digest deve rimanere sempre la stessa.
+        La funzione deve essere una One-Way Function, ovvero deve risultare computazionalmente semplice generare il digest fornita la chiave ma al contempo deve risultare computazionalmente difficile trovare la chiave dato il digest.
+        La funzione deve permettere l'effetto valanga, ovvero nel momento in cui viene cambiato anche solamente 1 carattere della chiave i risultato deve cambiare di più del 50%.
+        L'insieme D dei digest deve garantire un numero di collisioni (ovvero di chiavi chiavi diverse che producono lo stesso digest) computazionalmente trascurabile 
+    L'esempio più famoso di Cryptographic hash function è di sicuro lo standard SHA-256.
+
+Define the concept of "Hash function"
+    Una funzione di Hash è una funzione che fornita una chiave k in input restituisce un digest D, questa viene utilizzata per definire in modo univoco (non propriamente in realtà a causa delle collisioni) la chiave k.
+    La lunghezza del digest risulta uguale a prescindere dalla lunghezza della chiave e ci permette di comparare anche chiavi di lunghezza differente.
+
+Describe a brute force guessing attack in the context of password storage. How can it be mitigated?
+    Quando si parla di un brute force guessing attack sul database contenente le chiavi allora si intende dire che l'attaccante è riuscito ad avere accesso al database delle password e che ci troviamo in un contesto online (dunque un limite al numero delle password non è possibile).
+    In questo caso se le password fossero salvate in chiaro chiaramente l'attaccante potrebbe semplicemente leggere la password ed utilizzare la stessa, per questo motivo delle password potrebbe semplicemente venir salvato il digest di una funzione di hash criptografica.
+    Tale digest però potrebbe nuovamente venir scoperto utilizzando il Brute Force Attack, ovvero provando la funzione di hash su tutte le stringhe, finchè un digest compare all'interno del database.
+    Questo ci permetterebbe di trovare tutte le persone che hanno utilizzato una tale password.
+    Per mitigare questa possibilità la soluzione che viene implementata è aggiungere un salting alla password, ovvero aggiungere una stringa randomica all'inizio o alla fine della password in modo da garantire 2 cose:
+        1- Due password, anche se uguali hanno digest differente, evitando dunque di poter indovinare la password in base a quanto spesso è presente nel database
+        2- Una password nel moment in cui subisce un'attacco simile non viene mostrata subito ma bisogna ancora capire quale parte è diagest e quale non
+
+Define the concept of “Cryptosystem” and explain how its encryption and decryption algorithms can be specified mathematically
+    Un criptosistema è una tupla composta da 5 elementi un messaggio in chiaro M, una chiave K, il messaggio criptato C, un sistema di encryption E e un sistema di decryption D.
+    Tale criptosistema funziona attraverso le seguenti relazioni:
+        - E : M x K = C (Processo di encryption)
+        - D : C x K = M (Processo di decryption)
+
+Define the concept of "Key management" and explain why is crucial for cryptography and give some examples
+    Quando si parla di Key Management si intende la pratica di gestione delle chiavi crittografiche necessarie per il processo di encryption e decryption dei messaggi.
+    Le chiavi sono l'elemento di input della funzione con lo scopo di garantire allo stesso tempo Confidenciality, Integrity e Availability.
+    Seguendo il principio di Kerckhoffs, la sicurezza di un criptosistema deriva dalla sicurezza della sua chiave, non tanto dunque sulla secretezza del metodo di encryption utilizzato nel processo.
+    Questo significa che la chiave è l'elemento principale da mantenere al sicuro per garantire la sicurezza dell'intero sistema.
+    Quando si parla di key management si pensa spesso a due particolari situazioni:
+        1- Condivisione di chiavi per la comunicazione sincrona in modo asincrono
+        2- Storage di chiavi e validità delle stesse per la comunicazione sincrona
+    Nel primo caso si sta ponendo l'attenzione sul come ci si possa scambiare una chiave criptografica in modo che entrambi gli utenti all'interno della conversazione possano garantire la Confidenciality senza però che la chiave venga passata all'interno di un canale non protetto.
+    Nel secondo caso si sta ponendo l'attenzione sul come si possa mantenere segreta una chiave e sul quando ha senso/quando è necessario cambiare una chiave criptografica
+
+What are substitution and transposition ciphers? Give also examples
+    Il substitution e transposition ciphers sono due tra le principali metodologie per ottenere un ciphertext da un messaggio in chiaro, entrambe le metodologie prendono in input una chiave K, però funzionano in due modi completamente diversi.
+    Nel caso della substitution il funzionamento consiste in cambiare le lettere presenti all'interno del messaggio in base alla chiave che viene fornita.
+    Questa metodologia è conosciuta ed utilizzata sin dai tempi dei romani dato che veniva utilizzata nel cifrario di Cesare.
+    Ai giorni nostri non viene più utilizzata la stessa modifica alle lettere come fatto in passato ma ogni lettera viene modificata in modo diverso in base alla tipologia di sostituzione utilizzata in modo da garantire la Confidentiality e in modo da non permettere a qualcuno di decifrare utilizzando il pattern matching il messaggio.
+    Nel caso della transposition invece il funzionamento consiste nel riordinare le lettere in modo diverso rispetto a quello utilizzato all'interno del messaggio in chiaro.
+    Questa tecnica è stata utilizzata in antichità con il cifrario a colonne che consisteva nel disporre le lettere all'interno del messaggio in colonne (in base alla chiave inserita) e di riordinare le colonne prima di ricostruire il messaggio completo.
+
+What does it mean for a cryptographic technique to be computationally secure? 
+    Una tecnica criptografica risulta computazionalmente sicura in tutte quelle situazioni nelle quali vengono rispettate le seguenti condizioni:
+        Il tempo impiegato per la decifrazione della tecnica supera il tempo di validità delle informazioni che sono state crittografate con tale tecnica
+        Il costo computazionale impiegato per la decifrazione della tecnica supera il valore delle informazioni che sono state crittografate con tale tecnica
+
+Define the concept of “Symmetric key cryptography”:
+    Quando si parla di crittografia a chiave simmetrica si intendono tutte quelle situazioni nelle quali la chiave utilizzata per l'operazione di encryption e per l'operazione di decryption è la stessa.
+    In questi sistemi tutte le persone che hanno la possibilità di accedere alla conversazione condividono la stessa chiave e dunque la sicurezza del criptosistema consiste nel key management.
+
+Why is DES deprecated? Why is AES still used?
+
+
+Define the concept of “Asymmetric (public) key cryptography”
     

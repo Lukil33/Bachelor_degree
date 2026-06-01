@@ -1,25 +1,20 @@
 % Da migliorare per quanto riguarda l'umanità del testo
-% considera di aggiungere le citazioni del paper che hai salvato (citazione del Montri)
 
 \section{Context}\label{sec:context}
 
-The increasing availability of relational data that has been studied in recent years has led to a growing interest in the study of data structures capable of representing complex interactions between entities.
-In the literature, such type of relationship were originally managed by means of \textit{graphs}, which are mathematical structures used to model one-to-one relations between objects.
-However, many real-world scenarios find this representation too restrictive, when considering interactions between more than just two entities.
-\newline
-Several real-life scenarios cannot be represented without information loss as graphs.
-Some examples include conversations between multiple people, usually found online in forums, chat or more generally in social media, while others include the interactions between multiple objects or entities, such as those involved in a bank transaction.
-In these types of contexts, the loss of information when representing these interactions as graphs is unavoidable.
-\newline
-In order to be able to manage this type of data relationship, the concept of \textit{hypergraph} was introduced.
-Hypergraphs generalize standard graphs by allowing each hyperedge to connect an arbitrary number of nodes, making them suitable for modelling higher-order interactions~\cite{antelmi2023survey}.
-This type of data structure is particularly useful when the goal is to represent complex interations without losing structural information, as it is the case with graphs.
-\newline
-In real life scenarios, the interactions between entities are not static, but they evolve over time.
-New interactions are created, while others tend to disappear, this brings to a complex dynamic system that brings a theoretically static data structure to evolve over time.
+The increasing availability of relational data studied in recent years has led to a growing interest in the study of data structures capable of representing complex interactions between entities.
+In the literature, these relationships were originally managed by means of \emph{graphs}, which are mathematical structures used to model one-to-one relations between objects.
+However, many real-world scenarios find this representation too restrictive, especially when considering interactions between more than just two entities.
+Several real-life scenarios cannot be represented as graphs without a significant information loss.
+Some examples include conversations between multiple people, usually found online in forums, chat or more generally in social media, as well as joint interactions among multiple objects or entities, such as those involved in a bank transaction.
+In these contexts, information loss is unavoidable when restricting the representation to pairwise edges.
+To overcome these limitations, the concept of \emph{hypergraph} was introduced.
+Hypergraphs generalize standard graphs by allowing each hyperedge to connect an arbitrary number of nodes, making them suitable for modelling higher-order interactions~\cite{antelmi2023}.
+This type of data structure is particularly useful when the goal is to represent complex interations without losing structural information, which traditional graphs tend to discard.
+Furthermore, in practical scenarios the interactions between entities are not static, but they evolve over time.
+New interactions are created, while others tend to disappear, resulting in a complex, dynamic system that brings a theoretically static data structure to evolve over time.
 This type of challenge makes the management of this temporal evolution a necessity, in order to be able to represent the data always in an accurate way.
-``Just to mention a few examples, temporal graph modelling and analysis of temporal properties can have applications in sociology and social network analysis [\ldots]; security and distributed computing [\ldots]; biology''~\cite{lotito2020efficient}.
-\newline
-The analysis of large dynamic structures also introduces important computational problems~\cite{lotito2020efficient}.
-In particular, it is often necessary to continuously update the information of interest without being able to recalculate the entire solution from scratch each time.
-Consequently, the study of efficient techniques for the maintenance of combinatorial properties and structures in dynamic and temporal environments assumes a central role.
+``Just to mention a few examples, temporal graph modelling and analysis of temporal properties can have applications in sociology and social network analysis [\ldots]; security and distributed computing [\ldots]; biology''~\cite{lotito2020}.
+The analysis of large dynamic structures also introduces important computational problems~\cite{lotito2020}.
+In particular, it is often necessary to continuously update the information of interest without being able to recalculate the entire solution from scratch at each time step.
+Consequently, the study of efficient techniques for the maintenance of combinatorial properties and structures in dynamic and temporal environments plays a central role.
