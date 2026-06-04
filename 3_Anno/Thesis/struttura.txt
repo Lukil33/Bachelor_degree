@@ -1,0 +1,30 @@
+1. Introduzione
+
+1.1 Contesto
+1.2 Definizione del problema
+1.3 Grafi e ipergrafi
+1.4 Ipergrafi temporali
+
+2. Stato dell'arte e lavori correlati
+
+2.1 Hitting Set and Minimal Hitting Set
+2.2 Letteratura scientifica correlata
+
+3. Definizione del problema e approccio proposto
+
+3.1 Definizione formale del problema
+3.2 Soluzione proposta
+3.3 Descrizione dell'algoritmo
+3.4 Considerazioni sulla complessità
+
+4. Valutazioni sperimentali
+
+4.1 Setup sperimentale
+4.2 Dataset / Casi di test
+4.3 Risultati
+4.4 Discussione
+
+5. Conclusioni e sviluppi futuri
+
+5.1 Conclusioni
+5.2 Sviluppi futuri

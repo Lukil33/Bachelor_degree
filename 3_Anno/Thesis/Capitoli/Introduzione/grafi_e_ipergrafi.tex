@@ -1,0 +1,26 @@
+% Da controllare, riguarda da 0 le citazioni perchè ne ho cancellate di vecchie
+
+\section{Grafi e Ipergrafi}\label{sec:grafi_e_ipergrafi}
+
+\subsection{Grafi}
+
+Quando si parla di grafi, ci si riferisce a una struttura dati composta da un insieme di nodi (o vertici) e un insieme di archi che connettono coppie di nodi.
+Formalmenete un grafo è una coppia $G = (V, E)$, dove $V$ è l'insieme di nodi e $E$ è l'insieme di coppie di nodi, definita formalmente come:
+\[
+    E \subseteq \{\{u,v\} \mid u,v \in V,\; u \neq v\}
+\]
+Inoltre il grado di un nodo $v$, indicato con $deg(v)$, rappresenta il numero di archi incidenti su di esso.
+I grafi si possono dopodichè classificare in base a diverse caratteristiche, come ad esempio l'orientamento o meno degli archi, oppure ad un fattore di peso che può venire associato agli archi o ai nodi.
+I grafi costituiscono uno strumento fondamentale per la modellazione di sistemi complessi e trovano applicazione nell'analisi delle reti sociali, delle infrastrutture di trasporto, delle reti di comunicazione e dei sistemi biologici~\cite{newman2018}.
+Al contempo però possono risultare limitati quando si tratta di rappresentare senza alcuna perdita di informazione interazioni che coinvolgono molteplici entità contemporaneamente.
+
+\subsection{Ipergrafi}
+
+Gli ipergrafi sono la generalizzazione dei grafi, tale struttura dati complessa è composta da un insieme di nodi e da un insieme di iperarchi, dove ogni iperarco può connettere un numero arbitrario di nodi.
+Formalmente, un ipergrafo è una coppia $H = (V, E)$, dove $V$ è l'insieme di nodi e $E$ è l'insieme di sottoinsiemi di $V$, definita formalmente come:
+\[
+    E \subseteq \{ e \subseteq V \mid e \neq \emptyset \}
+\]
+La definizione di grado non cambia particolarmente per gli ipergrafi, ma può essere applicata alla cardinalità di un iperarco e, indicata con $|e|$, rappresenta il numero di nodi coinvolti nell'interazione descritta dall'iperarco.
+Come per i grafi, anche gli ipergrafi possono essere classificati in base a diverse caratteristiche, come ad esempio l'orientamento o meno degli iperarchi, oppure ad un fattore di peso che può venire associato agli iperarchi o ai nodi, però all'interno di questo lavoro verranno considerati solamente degli ipergrafi non orientati e senza peso.
+Gli ipergrafi a differenza dei grafi, consentono di rappresentare senza perdita di informazione interazioni che coinvolgono molteplici entità contemporaneamente, tale generalizzazione permette di rappresentare sistemi caratterizzati da interazioni collettive~\cite{lotito2020}. 
