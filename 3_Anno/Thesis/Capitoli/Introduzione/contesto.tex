@@ -1,21 +1,20 @@
 % Da migliorare per quanto riguarda l'umanità del testo
-% Da tradurre
 
 \section{Contesto}\label{sec:contesto}
 
-The increasing availability of relational data studied in recent years has led to a growing interest in the study of data structures capable of representing complex interactions between entities.
-In the literature, these relationships were originally managed by means of \emph{graphs}, which are mathematical structures used to model one-to-one relations between objects.
-However, many real-world scenarios find this representation too restrictive, especially when considering interactions between more than just two entities.
-Several real-life scenarios cannot be represented as graphs without a significant information loss.
-Some examples include conversations between multiple people, usually found online in forums, chat or more generally in social media, as well as joint interactions among multiple objects or entities, such as those involved in a bank transaction.
-In these contexts, information loss is unavoidable when restricting the representation to pairwise edges.
-To overcome these limitations, the concept of \emph{hypergraph} was introduced.
-Hypergraphs generalize standard graphs by allowing each hyperedge to connect an arbitrary number of nodes, making them suitable for modelling higher-order interactions~\cite{antelmi2023}.
-This type of data structure is particularly useful when the goal is to represent complex interations without losing structural information, which traditional graphs tend to discard.
-Furthermore, in practical scenarios the interactions between entities are not static, but they evolve over time.
-New interactions are created, while others tend to disappear, resulting in a complex, dynamic system that brings a theoretically static data structure to evolve over time.
-This type of challenge makes the management of this temporal evolution a necessity, in order to be able to represent the data always in an accurate way.
-``Just to mention a few examples, temporal graph modelling and analysis of temporal properties can have applications in sociology and social network analysis [\ldots]; security and distributed computing [\ldots]; biology''~\cite{lotito2020}.
-The analysis of large dynamic structures also introduces important computational problems~\cite{lotito2020}.
-In particular, it is often necessary to continuously update the information of interest without being able to recalculate the entire solution from scratch at each time step.
-Consequently, the study of efficient techniques for the maintenance of combinatorial properties and structures in dynamic and temporal environments plays a central role.
+La crescente disponibilità di dati relazionali da studiare negli ultimi anni ha portato ad un sempre maggiore interesse nello studio di strutture dati capaci di rappresentare interazioni complesse tra entità.
+In letteratura, queste relazioni erano originariamente gestite mediante l'uso di \emph{grafi}, ovvero strutture matematiche utilizzate per modellare relazioni uno-a-uno tra oggetti.
+Tuttavia, in molti scenari del mondo reale questa rappresentazione risulta troppo restrittiva, specialmente quando si considerano interazioni che coinvolgono più di due sole entità.
+Diversi scenari della vita reale non possono essere rappresentati come grafi senza una significativa perdita di informazione.
+Alcuni esempi includono le conversazioni tra più persone, che si trovano comunemente online nei forum, nelle chat o più in generale nei social media, così come le interazioni congiunte tra molteplici oggetti o entità, come quelle coinvolte in una transazione bancaria.
+In questi contesti, la perdita di informazione è inevitabile se si limita la rappresentazione ad archi tra coppie di nodi.
+Per superare queste limitazioni è stato introdotto il concetto di \emph{ipergrafo}.
+Gli ipergrafi generalizzano i grafi standard consentendo a ciascun iperarco di connettere un numero arbitrario di nodi, rendendoli adatti a modellare interazioni di ordine superiore~\cite{antelmi2023}~\cite{bretto2013}.
+Questo tipo di struttura dati è particolarmente utile quando l'obiettivo è rappresentare interazioni complesse senza perdere informazioni strutturali, che i grafi tradizionali tendono invece a scartare.
+Inoltre, negli scenari pratici le interazioni tra entità non sono statiche, ma evolvono nel tempo.
+Nuove interazioni vengono create, mentre altre tendono a scomparire, dando vita a un sistema complesso e dinamico che porta una struttura dati teoricamente statica a evolversi nel tempo.
+Questo tipo di sfida rende necessaria la gestione di tale evoluzione temporale, al fine di poter rappresentare i dati sempre in modo accurato.
+``Giusto per citare alcuni esempi, la modellazione di grafi temporali e l'analisi delle proprietà temporali possono trovare applicazione nella sociologia e nell'analisi delle reti sociali [\ldots]; nella sicurezza e nel calcolo distribuito [\ldots]; nella biologia''~\cite{lotito2020}.
+L'analisi di grandi strutture dinamiche introduce inoltre importanti problemi computazionali~\cite{lotito2020}.
+In particolare, è spesso necessario aggiornare continuamente le informazioni di interesse senza poter ricalcolare da capo l'intera soluzione a ogni passo temporale.
+Di conseguenza, lo studio di tecniche efficienti per il mantenimento di proprietà e strutture combinatorie in ambienti dinamici e temporali svolge un ruolo centrale.
