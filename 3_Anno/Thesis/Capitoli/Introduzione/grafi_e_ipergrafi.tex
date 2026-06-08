@@ -7,7 +7,7 @@
 Quando si parla di grafi, ci si riferisce a una struttura dati composta da un insieme di nodi (o vertici) e da un insieme di archi che connettono coppie di nodi.
 Formalmente un grafo è una coppia $G = (V, E)$, dove $V$ è l'insieme di nodi e $E$ è l'insieme di coppie di nodi, definita formalmente come:
 \[
-    E \subseteq \{\{u,v\} \mid u,v \in V,\; u \neq v\}
+    E \subseteq \{\{u,v\} \mid u,v \in V,\; u \neq v\}.
 \]
 Inoltre, il grado di un nodo $v$, indicato con $\deg(v)$, rappresenta il numero di archi incidenti su di esso.
 I grafi si possono poi classificare in base a diverse caratteristiche, come ad esempio l'orientamento degli archi o la presenza di un fattore di peso che può essere associato agli archi o ai nodi.
@@ -19,7 +19,7 @@ Al contempo, però, possono risultare limitati quando si tratta di rappresentare
 Gli ipergrafi sono la generalizzazione dei grafi; tale struttura dati complessa è composta da un insieme di nodi e da un insieme di iperarchi, dove ogni iperarco può connettere un numero arbitrario di nodi.
 Formalmente, un ipergrafo è una coppia $H = (V, E)$, dove $V$ è l'insieme di nodi e $E$ è l'insieme di sottoinsiemi di $V$, definita formalmente come:
 \[
-    E \subseteq \{ e \subseteq V \mid e \neq \emptyset \}
+    E \subseteq \{ e \subseteq V \mid e \neq \emptyset \}.
 \]
 La definizione di grado non cambia particolarmente per gli ipergrafi; tuttavia, introducendo la cardinalità di un iperarco, indicata con $|e|$, essa rappresenta il numero di nodi coinvolti nell'interazione descritta dall'iperarco~\cite{bretto2013}.
 Come per i grafi, anche gli ipergrafi possono essere classificati in base a diverse caratteristiche, come ad esempio l'orientamento degli iperarchi o la presenza di un fattore di peso che può essere associato agli iperarchi o ai nodi; tuttavia, all'interno di questo lavoro verranno considerati solamente ipergrafi non orientati e senza peso.
