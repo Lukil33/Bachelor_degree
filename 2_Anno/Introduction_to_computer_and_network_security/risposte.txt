@@ -103,7 +103,21 @@ Define the concept of “Symmetric key cryptography”:
     In questi sistemi tutte le persone che hanno la possibilità di accedere alla conversazione condividono la stessa chiave e dunque la sicurezza del criptosistema consiste nel key management.
 
 Why is DES deprecated? Why is AES still used?
-
+    DES (Data Encryption Standard) e AES (Advanced Encryption Standard) sono due tipologie di cifrari a blocchi a chiave simmetrica utilzzati per garantire la Confidenciality dei dati.
+    Il DES opera su blocchi di dati di 64 bit composti principalmente da una chiave (di lunghezza 56 bit) e da una componente di parità (di lunghezza 8 bit) per garantire l'Integrity della chiave.
+    L'AES è stato creato invece per sostituire il sistema DES operando su blocchi di dimensione di 128, 192 e 256 bit.
+    Il sistema di DES è stato considerato deprecato ed inutilizzabile agli inizi degli anni 2000 e la motivazione è intrinseca al modo in cui è stato strutturalmente costruito.
+    L'utilizzo di blocchi di dati di dimensione 64 bit e in particolare di una chiave di lunghezza 56 bit implica un numero di possibili chiavi sull'ordine delle 2^56.
+    Tale numero di chiavi risultava limitato già in precedenza in quanto nel giro di pochi giorni e con le tecnologie dei primi anni 2000 si riusciva a decifrare la chiave correttamente.
+    Il sistema AES invece viene ancora utilizzato in quanto considerando anche la lunghezza della chiave minore (quindi 128 bit) risulta computazionalemnte sicuro anche con la capacità di calcolo moderno in quanto il tempo necessario per utilizzare un attacco brute-force su una chiave di lunghezza simile eccede quasi sicuramente il tempo di rilevanza dei dati.
+    Oltre alla lunghezza della chiave c'è da citare che controllare una chiave utilizzando il sistema AES risulta veloce proprio per il modo in cui vengono effettuati i check in parallelo all'interno dell'intera architettura. 
 
 Define the concept of “Asymmetric (public) key cryptography”
+    Quando si parla di Public Key Cryptography o PKC si intende quella metodologia di criptografia che permette di scambiare dei messaggi o delle chiavi all'interno di un canale di comunicazione non sicuro in modo sicuro senza il bisogno di avere in precedenza deciso una chiave crittografica.
+    All'interno di questa categoria fanno parte due dei più famosi algoritmi di criptografia, l'algoritmo Diffie-Hellman (DH) e l'algoritmo RSA.
+    Questi algoritmi utilizzano una struttura generale relativamente simile anche se il loro funzionamento (come il loro scopo) è completamente diverso.
+    Entrambi gli algoritmi funzionano attraverso l'utilizzo di una coppia di chiavi composte da una chiave pubblica e una chiave privata, oltre all'utilizzo di alcune One Way function che permettono di decidere una chiave comune senza l'utilizzo di una chiave comune.
+    Attraverso l'utilizzo della PKC si garantisce Confidenciality e Integrity del dato, inoltre atraverso l'utilizzo dell'algoritmo RSA vi è la possibilità di garantire la firma digitale portando ad una Non Repudation del dato.
+
+How can PKC be used for identification (sign messages)?
     
