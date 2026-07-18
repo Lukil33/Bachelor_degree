@@ -1,0 +1,42 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Minimum Hitting Set in Ambito Online}\label{sec:minimum_hitting_set_in_ambito_online}
+
+In numerosi scenari applicativi, assumere che l'intera istanza del problema sia disponibile prima dell'esecuzione dell'algoritmo risulta poco realistico.
+Questa limitazione è alla base del contesto online: nei sistemi reali le informazioni vengono osservate con il passare del tempo e, come tali, le decisioni devono essere prese senza avere la possibilità di conoscere gli aggiornamenti futuri e dovendo impiegare il minor tempo possibile.
+I problemi analizzati in ambito online non hanno possibilità di conoscere gli aggiornamenti futuri in quanto l'istanza viene rivelata in maniera incrementale.
+Ogni qualvolta arrivi una sequenza di iperarchi, l'algoritmo deve riuscire a verificare in modo corretto se e come serve modificare l'Hitting Set, in base alla copertura fornita dall'Hitting Set precedente e dalla durata degli iperarchi che lo stesso sta già coprendo.
+Una delle caratteristiche principali che differenzia il modello online rispetto a quello dinamico è l'irrevocabilità delle decisioni.
+Una volta che un nodo viene selezionato all'interno della soluzione, questo non deve più essere rimosso nelle fasi successive.
+Questo vincolo apparentemente innocuo introduce una componente asimmetrica tra le operazioni disponibili e rende necessario bilanciare la qualità della soluzione corrente con l'incertezza riguardante l'evoluzione futura dell'istanza.
+A riguardo, la letteratura si distingue principalmente tra gli algoritmi deterministici e quelli randomizzati, che adesso andremo ad analizzare.
+
+\subsection*{Algoritmi deterministici}
+
+Con il termine algoritmi deterministici si intendono tutti quegli algoritmi che affrontano il problema del Minimum Hitting Set Online seguendo regole fisse e prive di componenti randomiche.
+L'assenza di casualità rende tali approcci particolarmente semplici da analizzare dal punto di vista teorico e facilmente implementabili in sistemi reali, poiché il comportamento dell'algoritmo è prevedibile e riproducibile.
+Le strategie più comuni operano secondo criteri \emph{greedy}, ovvero applicando algoritmi che prendono decisioni di ottimizzazione locale con la speranza di arrivare al contempo a una minimizzazione globale della soluzione del problema.
+Attraverso lo studio di un problema duale dell'Hitting Set Problem in ambito Online, ovvero il Set Cover Problem definito in ambito Online, i ricercatori Alon, Awerbuch e Azar hanno introdotto e dimostrato che nessun algoritmo deterministico può ottenere un competitive ratio migliore di $\Omega(\log m \log n)$, dove $m$ è il numero di iperarchi e $n$ il numero di vertici dell'istanza, fornendo al contempo un algoritmo $O(\log m \log n)$-competitivo che rende tale limite quasi ottimo~\cite{alon2003}.
+La letteratura definisce però anche l'esistenza di limiti teorici sulle prestazioni, espressi in termini di \emph{competitive ratio}, ottenibili dagli stessi.
+Tali limiti dipendono dall'istanza utilizzata, ovvero dal numero di nodi, di iperarchi o dalla frequenza massima, scelta come riferimento per l'analisi effettuata.
+
+\subsection*{Algoritmi randomizzati}
+
+Per superare le barriere computazionali poste dai lower bound degli algoritmi deterministici, la letteratura introduce la randomizzazione.
+Tali algoritmi probabilistici si distinguono poiché non scelgono i vertici in modo univoco, ma si basano su una distribuzione di probabilità attraverso la quale definiscono con quali nodi coprire l'iperarco corrente.
+L'idea alla base consiste nello sfruttare la casualità per rendere il comportamento dell'algoritmo meno prevedibile rispetto alla sequenza di input osservata.
+Il vantaggio teorico della randomizzazione non può però manifestarsi in modo uniforme su tutte le varianti del problema, ma deve dipendere fortemente dalle parametrizzazioni considerate.
+Per esempio, quando l'analisi viene condotta in funzione della frequenza $d$ dell'istanza, l'utilizzo della randomizzazione produce un miglioramento sostanziale: contro il limite deterministico $\Theta(d)$ discusso in precedenza, un approccio basato su un arrotondamento (\emph{rounding}) probabilistico della soluzione frazionaria, consente di ottenere un competitive ratio atteso $O(\log d)$, portando a un miglioramento esponenziale rispetto al caso deterministico~\cite{buchbinder2009}.
+Questo risultato non è però generalizzabile ad ogni formulazione del problema.
+Nel caso generale dell'Online Set Cover, parametrizzato rispetto al numero di vertici $n$ e di iperarchi $m$, Feige e Korman sono riusciti a dimostrare che, sotto ragionevoli ipotesi di complessità computazionale, nessun algoritmo randomizzato polinomiale può ottenere un competitive ratio migliore di $\Omega(\log m \log n)$, pareggiando di fatto il limite deterministico in questo regime~\cite{korman2004}.
+Possiamo affermare dunque che la randomizzazione non permette di garantire un vantaggio assoluto sugli algoritmi deterministici, dato che la sua efficacia è strettamente legata al parametro rispetto al quale si conduce l'analisi e alla particolare struttura combinatoria o geometrica dell'istanza considerata.
+Tra le tecniche più utilizzate sono presenti approcci basati su selezione probabilistica dei candidati, campionamenti incrementali e strategie che associano pesi dinamici ai vertici dell'ipergrafo, aggiornandoli nel tempo.
+Quando si tratta di soluzioni basate su algoritmi randomizzati la valutazione delle prestazioni di tali algoritmi viene effettuata considerando il \emph{competitive ratio atteso}, ossia il rapporto tra il costo medio della soluzione online e quello dell'ottimo offline calcolato sull'intera sequenza.
+Poiché gli algoritmi randomizzati introducono una maggiore complessità analitica e una minore prevedibilità operativa, risulta spesso necessario bilanciare la qualità attesa della soluzione e la stabilità del comportamento nei contesti applicativi reali.
+
+\subsection*{Considerazioni finali}
+
+Il modello online rappresenta un'estensione naturale del problema del Minimum Hitting Set (MHS), in quanto ci permette di studiare il problema all'interno di ambienti nei quali l'istanza non è interamente disponibile e le decisioni devono essere prese in modo incrementale e irrevocabile.
+All'interno dell'ambito online, a causa della complessità del problema stesso, le soluzioni proposte dagli algoritmi vengono analizzate tramite il \emph{competitive ratio}, strumento che consente di confrontare il costo della soluzione proposta con il corrispettivo risultato ottimale.

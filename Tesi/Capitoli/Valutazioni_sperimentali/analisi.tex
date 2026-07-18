@@ -1,0 +1,51 @@
+% Riguardare l'umanità del testo
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Analisi critica e trade-off}\label{sec:analisi_critica_e_trade_off}
+
+I risultati presentati nella sezione precedente confermano solo parzialmente le aspettative formulate in apertura del capitolo precedente.
+L'approccio incrementale non rappresenta un miglioramento universale rispetto alla baseline Iterative Greedy, quanto più un compromesso la cui efficacia dipende fortemente dalla struttura del dataset analizzato.
+All'interno della sezione seguente si discutono nello specifico i casi in cui la soluzione proposta ha rispettato le aspettative, i casi in cui le ha disattese, e si tenta di fornire una spiegazione di tali divergenze; viene inoltre analizzato il rapporto che ha la soluzione \texttt{Sliding Reuse} rispetto alle sue versioni \texttt{Sliding different Greedy} e \texttt{Sliding New Nodes}.
+
+\subsection*{Quando l'algoritmo funziona}
+
+I casi d'uso più rappresentativi del comportamento atteso sono stati i dataset Crypto Bitcoin e Email Enron, all'interno dei quali, come predetto correttamente dalle aspettative presentate nel capitolo precedente, gli algoritmi basati su una struttura a finestra temporale a scorrimento hanno osservato dei miglioramenti in fatto di dimensione media dell'Hitting Set $(\overline{|X|}_{\tau})$ e in fatto di numero di nodi distinti scelti $(R)$ rispetto a quelli osservati dall'algoritmo iterativo greedy.
+Tali risultati però non sono sempre accompagnati da un analogo vantaggio in termini di tempo di esecuzione, nonostante si possa vedere un leggero vantaggio in termini di tempo di esecuzione all'interno del primo caso di test di Email Enron e di Crypto Bitcoin, per riuscire a definire un miglioramento sostanziale di $T_{exec}$ è necessario aumentare il numero di iperarchi e aumentare il rapporto $\epsilon/\delta$, mantenendo però una distribuzione degli iperarchi costante.
+Tale distribuzione di arrivo quasi costante unita alla bassa densità del dataset Crypto Bitcoin ha creato infatti le condizioni ideali affinché l'algoritmo possa esprimersi al meglio.
+Risulta inoltre necessario sottolineare come a prescindere dal dataset considerato, la scelta di un rapporto $\epsilon/\delta$ alto ha portato a un miglioramento generale dei risultati, in quanto l'algoritmo è riuscito a sfruttare al meglio, ove possibile, il riutilizzo dei nodi attraverso la finestra temporale a scorrimento.
+
+\subsection*{Quando l'algoritmo non rispetta le aspettative}
+
+Opposti ai casi d'uso presentati precedentemente, i casi d'uso più rappresentativi di un comportamento inatteso sono stati i dataset Coauth history e Contacts high school.
+Come previsto all'interno del capitolo precedente, a causa della non stazionarietà nella distribuzione degli arrivi degli iperarchi, in entrambi i casi si è potuto notare come l'aumento nel tempo di esecuzione totale $(T_{exec})$ non sia stato corrisposto da una diminuzione significativa e apprezzabile dal punto di vista della dimensione media della soluzione $(\overline{|X|}_{\tau})$ e del numero di nodi distinti scelti $(R)$.
+Tali risultati sono motivati dal fatto che, quando le interazioni si concentrano in burst isolati o in un singolo picco terminale, la memoria storica costruita dall'algoritmo non ha modo di essere sfruttata prima che la finestra si sposti oltre, vanificando l'investimento computazionale fatto per mantenerla.
+Va precisato che l'effetto non risulta completamente identico nei due dataset, su Coauth history il margine di miglioramento risulta nullo o negativo in quasi tutte le configurazioni testate, mentre nel caso di Contacts high school la soluzione mantiene un vantaggio minimo ma non sempre nullo, segno che la sola intermittenza della distribuzione non è sufficiente ad annullare del tutto il beneficio del riuso, ma ne riduce significativamente l'entità rispetto ai casi favorevoli discussi in precedenza.
+
+\subsection*{Confronto tra le varianti algoritmiche}
+
+I risultati ci consentono inoltre di valutare quanto le singole scelte progettuali (si veda il Capitolo~\ref{sec:varianti_degli_algoritmi_analizzati}) abbiano effettivamente impattato sul comportamento del sistema finale.
+L'analisi delle tre varianti mostra infatti che non tutte le modifiche progettuali hanno prodotto un cambiamento radicale e che l'effetto di ciascuna dipende dalla componente dell'algoritmo che viene alterata.
+La variante \texttt{Sliding different Greedy}, che adotta una selezione randomica dell'iperarco di riferimento invece che a cardinalità minima, mostra un comportamento discontinuo sul tempo di esecuzione a causa della sua componente randomica.
+Nonostante in alcuni casi di test tale algoritmo fornisca soluzioni leggermente migliori rispetto a quelle viste nell'algoritmo Sliding Reuse, i risultati sono quasi completamente comparabili, se non addirittura in media leggermente peggiori.
+Va peraltro riconosciuto che questa variante minima è causata dalla variazione minima che è stata applicata all'interno della stessa euristica hyperedge-oriented; un test più probante avrebbe richiesto un'euristica vertex-oriented strutturalmente distinta come quella descritta da Johnson~\cite{johnson1974} all'interno del capitolo riguardo allo stato dell'arte (si veda il Capitolo~\ref{sec:minimum_hitting_set_in_ambito_statico}).
+La variante \texttt{Sliding New Node}, che inverte la priorità della funzione ReuseGreedyHittingSet preferendo nodi privi di storico, produce invece un effetto netto e coerente con l'ipotesi di progettazione.
+Come si può notare all'interno delle soluzioni mostrate in tutti i dataset, essa presenta un numero di nodi distinti scelti $(R)$ peggiore, o al più comparabile, rispetto a quello denotato all'interno di Sliding Reuse, e un generale aumento nel tempo di esecuzione totale $(T_{exec})$.
+In conclusione, il confronto tra varianti suggerisce che la componente realmente determinante del sistema non sia tanto l'algoritmo greedy di base, quanto piuttosto la politica di priorità nel riuso dei nodi, la cui sola inversione è sufficiente a vanificare gran parte del beneficio in $R$ ottenuto dalla soluzione proposta.
+
+\subsection*{Il costo computazionale come contropartita sistematica}
+
+Un risultato trasversale a tutti i dataset analizzati è che il tempo di esecuzione di \texttt{Sliding Reuse} risulta quasi sempre superiore a quello di Iterative Greedy, indipendentemente dalla qualità della soluzione ottenuta.
+Tale risultato, in apparenza in contrasto con l'obiettivo dichiarato in fase di progettazione (si veda il Capitolo~\ref{sec:soluzione_proposta}), trova spiegazione nell'analisi di complessità (si veda il  Capitolo~\ref{sec:considerazioni_sulla_complessità}).
+All'interno della soluzione la funzione \texttt{Cleanup}, che nel caso pessimo richiede l'esecuzione della funzione \texttt{ReuseGreedyHittingSet} sull'intera porzione di finestra ancora scoperta, introduce dei costi computazionali non trascurabili rispetto a quelli che si trovano all'interno di un algoritmo greedy puro, privo di strutture ausiliarie da mantenere e consultare a ogni passo.
+Il prezzo pagato per ottenere un minor turnover dei nodi nel tempo si traduce dunque in un aumento del lavoro richiesto per ciascun singolo aggiornamento.
+
+\subsection*{Contesti d'uso e limiti dell'approccio}
+
+Analizzando l'insieme delle osservazioni precedenti emergono alcune situazioni in cui l'algoritmo riesce a sfruttare appieno il potenziale della finestra temporale a scorrimento.
+La soluzione proposta risulta particolarmente vantaggiosa in tutti quei casi in cui la distribuzione di arrivo degli iperarchi può essere considerata relativamente uniforme nel tempo e priva di crescite esponenziali capaci di concentrare la maggior parte degli eventi in una porzione ristretta della finestra di osservazione.
+Al contrario, l'algoritmo risulta poco indicato, o nei casi peggiori controproducente, in presenza di forte burstiness o di picchi concentrati di attività, come osservato nel dataset Coauth history, e in tutti i contesti nei quali il vincolo principale è la latenza di aggiornamento piuttosto che il numero di nodi distinti coinvolti nel tempo.
+In tali casi il costo aggiuntivo della gestione dello storico non viene ripagato da un miglioramento della qualità della soluzione, rendendo l'algoritmo iterativo greedy una scelta preferibile nonostante la sua natura non incrementale.
+Va infine osservato come il trade-off identificato non sia univoco nemmeno all'interno dello stesso dataset, ma dipenda anche dal rapporto tra l'ampiezza della finestra $\epsilon$ e il passo di scorrimento $\delta$.
+Quando il rapporto tra le due tende a infinito, ovvero quando si considerano finestre temporali più ampie e un minor spostamento di tale finestra, la soluzione implementa attraverso l'utilizzo della finestra temporale a scorrimento risulta migliore a causa della maggiore opportunità di riutilizzo dei nodi e del minore ricalcolo necessario, mentre quando il rapporto tende a uno o a un valore minore di uno, l'utilizzo della finestra temporale a scorrimento aggiunge solamente dei costi computazionali che non è in grado di coprire.
+La scelta dei parametri $\epsilon$ e $\delta$ rimane quindi, anche alla luce dei risultati sperimentali, un compromesso da calibrare sul contesto applicativo specifico, piuttosto che un valore universalmente ottimale.

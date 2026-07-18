@@ -1,0 +1,182 @@
+% Ready
+
+\section{Descrizione dell'algortimo}\label{sec:descrizione_algoritmo}
+
+Una volta delineata l'architettura concettuale e la strategia incrementale nella sezione precedente, questo capitolo scende nel dettaglio ingegneristico e implementativo della soluzione.
+Di seguito verranno presentate le strutture dati fondamentali scelte per garantire l'efficienza computazionale, lo pseudocodice dell'algoritmo e un'analisi passo-passo del suo funzionamento.
+
+\subsection{Strutture dati utilizzate}
+
+Per garantire alle operazioni di aggiornamento incrementali un costo computazionale contenuto, è stato necessario l'utilizzo di strutture dati complesse che ci permettessero di ammortizzare e diminuire i costi computazionali del problema.
+Per le strutture dati è stato preso spunto da quelle utilizzate per l'analisi del problema del Minimum Hitting Set sviluppato in ambito dinamico (si veda il Capitolo~\ref{sec:minimum_hitting_set_in_ambito_dinamico})~\cite{agarwal2020}.
+Le strutture dati principali che sono state utilizzate all'interno del mio lavoro sono le seguenti:
+\begin{itemize}
+    \item \textbf{Ipergrafo Temporale:} Rappresentato tramite la struttura dati TemporalHypergraph fornita dalla libreria ``hypergraphx''~\cite{lotito2023}, serve a mantenere l'insieme degli iperarchi e dei rispettivi timestamp, ovvero gli istanti di tempo che determinano l'arrivo degli iperarchi all'interno della finestra temporale.
+    \item \textbf{Hitting Set:} Rappresentato tramite un set, serve a tenere traccia dell'Hitting Set attivo ad un generico tempo $\tau_k$.
+    \item \textbf{Iperarchi coperti singolarmente:} Rappresentato tramite un dizionario, serve a tenere traccia del numero di iperarchi coperti singolarmente da parte di ogni nodo presente nell'Hitting Set.
+    \item \textbf{Presenza dei nodi nell'Hitting Set:} Rappresentato tramite un dizionario, serve a tenere traccia dell'ultimo istante temporale all'interno del quale un dato nodo $v \in V$ è stato parte dell'Hitting Set.
+\end{itemize}
+
+\subsection{Lo Pseudocodice iniziale}
+
+Di seguito viene riportato lo pseudocodice della Window Slide Function che descrive la logica di transizione incrementale dall'istante $\tau_k$ all'istante $\tau_{k+1}$.
+
+\begin{algorithm}
+\caption{Window Slide Function}\label{alg:window_slide_function}
+\begin{algorithmic}[1]
+
+\Require $X(\tau_k)$, $W(\tau_k)$, $CoverCount(\tau_k)$, $NodePresence(\tau_k)$
+\Ensure $W(\tau_{k+1})$, $CoverCount(\tau_{k+1})$, $NodePresence(\tau_{k+1})$
+
+\State $X(\tau_k)^{needed}\gets RemoveNodes(X(\tau_k),W(\tau_k)^-,CoverCount(\tau_k))$
+\State $(W(\tau_k)^{new}, W(\tau_k)^{reuse})\gets CleanupAndArchDivision(W(\tau_k)^+,X(\tau_k)^{needed},NodePresence(\tau_k))$
+\State $X(\tau_k)^{new}\gets GreedyHittingSet(W(\tau_k)^{new})$
+\State $W(\tau_k)^{remaining}\gets \left\{(S,t')\in W(\tau_k)^{reuse}\mid S \cap X(\tau_k)^{new}=\emptyset\right\}$
+\State $X(\tau_k)^{reuse}\gets ReuseGreedyHittingSet(W(\tau_k)^{remaining},NodePresence(\tau_k))$
+\State $X(\tau_{k+1})^{complete}\gets X(\tau_k)^{needed} \cup X(\tau_k)^{new} \cup X(\tau_k)^{reuse}$
+\State $X(\tau_{k+1})\gets Cleanup(X(\tau_{k+1})^{complete}, W'(\tau_k), CoverCount(\tau_k), NodePresence(\tau_k))$
+\State $NodePresence(\tau_{k+1})\gets UpdateNodePresence(NodePresence(\tau_k), X(\tau_{k+1}))$
+\State \Return $X(\tau_{k+1}), CoverCount(\tau_{k+1}), NodePresence(\tau_{k+1})$
+
+\end{algorithmic}
+\end{algorithm}
+
+Poiché la funzione sfrutta la manipolazione degli iperarchi e il riuso dei nodi è necessario analizzare anche le sottofunzioni che la compongono per comprendere al meglio il funzionamento dell'algoritmo:
+\begin{itemize}
+    \item \texttt{RemoveNodes}: la seguente funzione come descritto in precedenza ha lo scopo di rimuovere tutti i nodi dell'Hitting Set che successivamente alla rimozione degli iperarchi non coprono più effettivamente alcun iperarco da soli.
+    \item \texttt{CleanupAndArchDivision}: all'interno della funzione \texttt{CleanupAndArchDivision} si controlla per ogni iperarco se è presente o meno un nodo all'interno dell'insieme $X(\tau_k)^{needed}$, se è presente si scarta l'iperarco poiché già coperto, altrimenti lo si aggiunge all'insieme $W(\tau_k)^{reuse}$ o $W(\tau_k)^{new}$ in base a se possiede nodi presenti in $NodePresence(\tau_k)$ oppure no.
+    \item \texttt{GreedyHittingSet}: l'algoritmo utilizzato per ricavare l'Hitting Set dato l'ipergrafo di partenza è indifferente e può essere trattato come una ``scatola nera'' (o \textit{Black-Box}), in quanto il framework è agnostico rispetto alla versione di variante Greedy che viene scelta, poiché l'algoritmo viene fatto girare sugli iperarchi che non hanno nodi presenti all'interno di $NodePresence(\tau_k)$, l'unico nostro obiettivo è quello di coprire questi iperarchi con il minor numero di nodi possibili. 
+    \item \texttt{ReuseGreedyHittingSet}: come discusso in precedenza per la funzione \texttt{GreedyHittingSet} anche in questo caso è possibile adottare un qualunque algoritmo greedy in grado di risolvere il problema del Miminum Hitting Set, con l'unica variazione di rispettare un'ulteriore euristica di priorità (NodePresence) forzando l'algoritmo in caso di indecisione a preferire nodi con uno storico in modo da ridurre l'aggiunta di nuovi nodi distinti all'interno dell'Hitting Set.
+    \item \texttt{Cleanup}: la funzione di \texttt{Cleanup} ha lo scopo di rimuovere tutti i nodi ridondanti, ovvero quelli che non coprono da soli nessun iperarco e di testare se $X(\tau_{k+1})^{reduced}$ riesce a coprire tutti gli iperarchi presenti all'interno della finestra temporale, in caso contrario si utilizza la funzione \texttt{ReuseGreedyHittingSet} sugli iperarchi non coperti da $X(\tau_{k+1})^{reduced}$ andando così a ricavare l'insieme $X{(\tau_{k+1})}^{patch}$ in modo da creare $X{(\tau_{k+1})}$.
+    \item \texttt{UpdateNodePresence}: la seguente funzione ha il solo scopo di aggiornare il counter di presenza all'interno dell'Hitting Set per tutti i nodi alla fine dello shift temporale.
+\end{itemize}
+
+\subsection{Analisi Passo-Passo}
+
+L'Algoritmo \texttt{Window Slide Function}~\ref{alg:window_slide_function} serve a definire le operazioni necessarie da effettuare successivamente allo shift della finestra temporale per garantire la validità dell'Hitting Set.
+Di seguito viene presentata un'analisi dettagliata del flusso di esecuzione, per evidenziare come le sottofunzioni precedentemente descritte cooperino per mantenere la minimalità dell'intera soluzione.\newline
+\newline
+\textbf{Riga 1}, la funzione \texttt{RemoveNodes} riceve in input l'Hitting Set valido al tempo $\tau_k$ $X(\tau_k)$, l'insieme degli iperarchi usciti dalla finestra temporale a seguito dello shift $W(\tau_k)^-$ e la struttura dati che tiene traccia di quanti iperarchi vengono coperti singolarmente da ogni nodo presente in $X(\tau_k)$.
+Per garantire il mantenimento del minor numero di nodi andiamo ad eliminare tutti quelli che non coprono singolarmente neanche un iperarco, generando l'insieme di nodi strettamente necessari denominato $X(\tau_k)^{needed}$.\newline
+\textbf{Riga 2}, il framework affronta l'inserimento dei nuovi iperarchi ($W(\tau_k)^+$) tramite la funzione \texttt{CleanUp-}\newline\texttt{AndArchDivision}.
+Questa funzione esegue un duplice compito: da un lato scarta i nuovi iperarchi che risultano già coperti dai nodi dell'Hitting Set rimanente $X(\tau_k)^{needed}$; mentre dall'altro, suddivide i restanti iperarchi scoperti in due liste ($W(\tau_k)^{new}$ e $W(\tau_k)^{reuse}$), ovvero rispettivamente la lista degli iperarchi con almeno un nodo che è stato precedentemente all'interno di un Hitting Set e il suo corrispettivo.
+Tale operazione si basa sulla struttura dati $NodePresence(\tau_k)$, isolando gli iperarchi che contengono nodi già visti storicamente dal sistema.\newline
+Le \textbf{righe 3, 4 e 5} effettuano l'operazione di AddNode precedentemente discussa nell'architettura (si veda il Capitolo~\ref{sec:soluzione_proposta}).
+Alla riga 3, viene invocato il \texttt{GreedyHittingSet} standard sull'insieme $W(\tau_k)^{new}$ per coprire gli iperarchi senza nodi storicamente già visti utilizzando il numero minore possibile di nodi, producendo l'insieme $X(\tau_k)^{new}$.
+Successivamente alla riga 4, si rimuovono dalla lista $W(\tau_k)^{reuse}$ tutti gli iperarchi che sono stati coperti dall'introduzione dei nodi in $X(\tau_k)^{new}$.
+Su quest'ultimo insieme viene eseguito alla riga 5 la funzione \texttt{ReuseGreedyHittingSet} che, sfruttando i pesi di $NodePresence(\tau_k)$, cerca di trovare il numero minore di nodi che coprono gli iperarchi presenti in $W(\tau_k)^{remaining}$ massimizzando allo stesso tempo il riuso dei vertici storici e generando così l'insieme $X(\tau_k)^{reuse}$.\newline
+Le \textbf{righe 6, 7 e 8} controllano la soluzione e consolidano lo stato delle strutture dati.
+Dopo aver unito i tre contributi dei nodi alla riga 6, viene chiamata a riga 7 la funzione \texttt{Cleanup} la quale effettua un controllo di sicurezza per eliminare eventuali ridondanze incrociate nate dalle due diverse fasi greedy e, se necessario, applica una "patch" locale per garantire la totale copertura della nuova finestra temporale $W'(\tau_k)$.
+Il ciclo si conclude alla riga 8 con l'aggiornamento dei contatori in $NodePresence(\tau_{k+1})$, preparando le strutture dati per lo shift successivo.\newline
+\textbf{Riga 9}, viene infine ritornato dalla funzione l'Hitting Set valido al tempo $\tau_{k+1}$ e vengono restituite le strutture dati aggiornate.
+
+\subsection{Esempio di Esecuzione}
+
+Per rendere concreto il funzionamento algoritmico della \textit{Window Slide Function}, se ne illustra l'applicazione su un caso di test isolato durante la transizione dall'istante $\tau_k$ all'istante $\tau_{k+1}$, una rappresentazione grafica degli archi la si può riscontrare nella fig~\ref{fig:ipergrafo_temporale}.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    % --- STILI ORIGINALI ---
+    element/.style={circle, draw=black, fill=white, font=\large\sffamily, minimum size=24pt, inner sep=0pt, thick},
+    % Iperarchi (Ultra Thick, senza riempimento come richiesto)
+    edge1/.style={blue, ultra thick},
+    edge2/.style={red, ultra thick},
+    edge3/.style={green!60!black, ultra thick},
+    edge4/.style={orange, ultra thick},
+    edge5/.style={purple, ultra thick},
+    edge6/.style={teal, ultra thick},
+    edge7/.style={darkgray!60!black, ultra thick},
+    edge8/.style={brown, ultra thick}
+]
+
+    % --- FUNZIONE PER DISEGNARE IL GRID DI NODI ---
+    % Parametri: #1 Prefisso nome nodi, #2 Coordinata X di base
+    \newcommand{\hypernodes}[2]{
+        \node[element] (#1-v1) at (#2+0, 3) {$v_1$};
+        \node[element] (#1-v2) at (#2+2, 3) {$v_2$};
+        \node[element] (#1-v3) at (#2+0, 1) {$v_3$};
+        \node[element] (#1-v4) at (#2+2, 1) {$v_4$};
+    }
+
+    % ==========================================
+    % ISTANTE t1 (Spostamento x=0)
+    % ==========================================
+    \hypernodes{t1}{0}
+    % Insieme {v1, v3} - Verticale sx
+    \draw[edge1] (0, 2) ellipse (0.7cm and 1.8cm);
+    % Insieme {v2, v4} - Verticale dx
+    \draw[edge2] (2, 2) ellipse (0.7cm and 1.8cm);
+
+    % ==========================================
+    % ISTANTE t2 (Spostamento x=6)
+    % ==========================================
+    \hypernodes{t2}{6}
+    % Insieme {v1, v3} - verticale sx
+    \draw[edge8] (6, 2) ellipse (0.7cm and 1.8cm);
+    % Insieme {v1, v2} - Orizzontale alto
+    \draw[edge3] (7, 3) ellipse (1.8cm and 0.7cm);
+    % Insieme {v1, v4} - Diagonale
+    \draw[edge4, rotate around={45:(7,2)}] (7, 2) ellipse (0.8cm and 2.2cm);
+
+    % ==========================================
+    % ISTANTE t3 (Spostamento x=12)
+    % ==========================================
+    \hypernodes{t3}{12}
+    % Insieme {v2, v4} - Verticale dx
+    \draw[edge5] (14, 2) ellipse (0.7cm and 1.8cm);
+    % Insieme {v3, v4} - Orizzontale basso
+    \draw[edge6] (13, 1) ellipse (1.8cm and 0.7cm);
+    % Insieme {v2, v3} - Diagonale 
+    \draw[edge7, rotate around={-45:(13.2, 2.35)}] (13.3, 2) ellipse (0.8cm and 2.2cm);
+
+    % --- LINEA DEL TEMPO ---
+    \draw[-{Stealth[scale=1.5]}, thick] (-1, -1) -- (16, -1);
+    
+    % Label temporali centrate sotto ogni blocco
+    \node[below, font=\Large] at (1, -1.2) {$\tau_k$};
+    \node[below, font=\Large] at (7, -1.2) {$\tau_{k+1}$};
+    \node[below, font=\Large] at (13, -1.2) {$\tau_{k+2}$};
+
+\end{tikzpicture}
+\caption{Evoluzione temporale dell'ipergrafo nei tre istanti $\tau_k$, $\tau_{k+1}$ e $\tau_{k+2}$.}
+\label{fig:ipergrafo_temporale}
+\end{figure}
+Assumiamo che al tempo iniziale $\tau_k$ si verifichino le seguenti condizioni:
+\begin{itemize}
+    \item Finestra temporale = $[\tau_k, \tau_{k+1}]$
+    \item $X(\tau_k) = \{v_1, v_2\}$ (Hitting Set corrente).
+    \item $CoverCount(\tau_k)$ indica che $v_1$ copre singolarmente 2 iperarchi, mentre $v_2$ copre singolarmente 1 iperarco.
+    \item $NodePresence(\tau_k) = \{v_1: k, v_2: k, v_3: 0, v_4: 0\}$, indicando la frequenza storica dei nodi.
+\end{itemize}
+
+Al tempo $\tau_{k+1}$, l'evoluzione temporale comporta le seguenti modifiche strutturali:
+\begin{itemize}
+    \item Gli iperarchi $e_{blu} = \{v_1, v_3\}$ e $e_{rosso} = \{v_2, v_4\}$ scadono ed entra in $W(\tau_k)^-$.
+    \item Entrano tre nuovi iperarchi in $W(\tau_k)^+$: $e_{grigio} = \{v_2, v_3\}$,  $e_{viola} = \{v_2, v_4\}$ e $e_{azzurro} = \{v_3, v_4\}$.
+\end{itemize}
+
+L'algoritmo esegue i passi come segue:
+
+\begin{enumerate}
+    \item \textbf{Rimozione nodi obsoleti (Riga 1):} Viene processata la scadenza di $e_{blu}$ e $e_{rosso}$.
+    Poiché $v_2$ non copre nessun altro iperarco attivo, la funzione \texttt{RemoveNodes} lo elimina.
+    Il nodo $v_1$ viene invece mantenuto poiché copre ancora $e_{verde}$, $e_{giallo}$ e $e_{marrone}$.
+    Si ottiene $X(\tau_k)^{needed} = \{v_1\}$.
+    \item \textbf{Divisione degli archi (Riga 2):} Viene esaminato l'insieme dei nuovi arrivi $W(\tau_k)^+ = \{e_{grigio}, e_{viola}, e_{azzurro}\}$. 
+    \begin{itemize}
+        \item L'iperarco $e_{grigio} = \{v_2, v_3\}$ non è coperto da $X(\tau_k)^{needed}$.
+        Controllando $NodePresence$, si nota che il nodo $v_2$ ha uno storico ($k$), mentre $v_3$ è un nodo vergine ($0$). Di conseguenza, $e_{grigio}$ viene inserito in $W(\tau_k)^{reuse}$. L'insieme $W(\tau_k)^{new}$ rimane vuoto.
+        \item L'iperarco $e_{viola} = \{v_2, v_4\}$ non è coperto da $X(\tau_k)^{needed}$.
+        Controllando $NodePresence$, si nota che il nodo $v_2$ ha uno storico ($k$), mentre $v_4$ è un nodo vergine ($0$). Di conseguenza, $e_{viola}$ viene inserito in $W(\tau_k)^{reuse}$. L'insieme $W(\tau_k)^{new}$ rimane vuoto.
+        \item L'iperarco $e_{azzurro} = \{v_3, v_4\}$ non è coperto da $X(\tau_k)^{needed}$.
+        Controllando $NodePresence$, si nota che sia il nodo $v_3$ che $v_4$ sono nodi vergine ($0$). Di conseguenza, $e_{azzurro}$ viene inserito in $W(\tau_k)^{new}$.
+    \end{itemize}
+    \item \textbf{Fase Greedy (Righe 3-5):} Viene applicata la funzione \texttt{GreedyHittingSet} sull'insime $W(\tau_k)^{new}$, portando ($X(\tau_k)^{new} = \{v_4\}$).
+    Alla riga 4, si rimuove l'iperarco $e_{viola}$ da $W(\tau_k)^{reuse}$ in quanto è ora coperto da uno dei nodi presenti in $X(\tau_k)^{new}$.
+    Alla riga 5, la funzione \texttt{ReuseGreedyHittingSet} viene applicata sull'insieme $W(\tau_k)^{remaining} = \{e_{grigio}\}$.
+    L'algoritmo valuta i due nodi e grazie al peso maggiore in $NodePresence$, preferisce lo storico $v_2$ rispetto al nuovo $v_3$. Viene determinato $X(\tau_k)^{reuse} = \{v_2\}$.
+    \item \textbf{Unione e Pulizia (Righe 6-8):} L'unione temporanea genera $X(\tau_{k+1})^{complete} = \{v_1\} \cup \{v_2\} \cup \{v_4\} = \{v_1, v_2, v_4\}$.
+    La funzione \texttt{Cleanup} convalida l'insieme verificando che sia minimale e che copra l'intera finestra aggiornata.
+    Infine, \texttt{UpdateNodePresence} incrementa i contatori di $v_1$, $v_2$ e $v_4$.
+\end{enumerate}
+L'algoritmo restituisce quindi la soluzione aggiornata $X(\tau_{k+1}) = \{v_1, v_2, v_4\}$.

@@ -1,0 +1,39 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Considerazioni sulla complessità}\label{sec:considerazioni_sulla_complessità}
+
+In questa sezione viene proposta un'analisi della complessità computazionale, temporale e spaziale, dell'algoritmo \textit{Window Slide Function} (Algoritmo~\ref{alg:window_slide_function}).
+L'obiettivo è quello di dimostrare come l'approccio incrementale permetta di ridurre i costi computazionali dell'algoritmo in quanto non costringe a un ricalcolo della soluzione da zero ad ogni spostamento della finestra temporale.
+
+\subsection*{Analisi Temporale}
+
+Per riuscire a determinare la complessità temporale complessiva, è necessario esaminare dapprima il costo computazionale delle singole procedure ausiliarie:
+\begin{itemize}
+    \item \textbf{\texttt{RemoveNodes}:} Questa funzione analizza gli $m^-$ iperarchi scaduti.
+    Sfruttando la struttura $CoverCount$, l'algoritmo decrementa i contatori di copertura in tempo $O(1)$ per ciascun nodo appartenente all'iperarco scaduto.
+    Poiché ogni iperarco ha una cardinalità massima pari a $k$, il costo totale è limitato superiormente da $O(m^- \cdot k)$.
+    \item \textbf{\texttt{CleanUpAndArchDivision}:} Per ognuno degli $m^+$ nuovi iperarchi arrivati, la funzione controlla l'intersezione con l'insieme $X(\tau_k)^{needed}$ di dimensione massima $n$.
+    Considerando l'inserimento degli iperarchi in lista come costo $O(1)$ ammortizzato e considerando che nel caso peggiore per ogni iperarco andranno analizzati tutti i nodi, si ha un costo computazionale di $O(m^+ \cdot k)$ per controllare tutti gli iperarchi e un costo di $O(1)$ per l'inserimento degli iperarchi nelle rispettive liste.
+    Di conseguenza, la funzione è limitata superiormente da $O(m^+ \cdot k)$.
+    \item \textbf{\texttt{GreedyHittingSet} e \texttt{ReuseGreedyHittingSet}:} Sia $m_{res}$ il numero di iperarchi rimasti scoperti che devono essere processati dalle fasi greedy (dove $m_{res} \le m^+$).
+    Un algoritmo greedy classico per l'Hitting Set ha una complessità pari a $O(m_{res} \cdot k \cdot \log n)$ o $O(m_{res} \cdot k^2)$ a seconda dell'implementazione utilizzata~\cite{johnson1974, chvatal1979}.
+    Nel nostro framework, l'aggiunta dell'euristica basata su $NodePresence$ nel \texttt{ReuseGreedyHittingSet} richiede una consultazione in tempo costante $O(1)$ tramite hash map, mantenendo la complessità asintotica invariata rispetto al greedy tradizionale.
+    \item \textbf{\texttt{Cleanup}:} La fase di potatura verifica la minimalità dell'Hitting Set finale eseguendo un controllo su tutti gli iperarchi presenti all'interno della finestra temporale aggiornata $(m')$ e, nel caso in cui fosse necessario, eseguendo nuovamente la funzione \texttt{ReuseGreedyHittingSet}.
+    Poiché, come visto in precedenza, il costo della visita di ciascun iperarco è $O(m'\cdot k)$ e il costo computazionale della funzione \texttt{ReuseGreedyHittingSet} è di $O(m' \cdot k \cdot \log n)$, il costo computazionale totale della funzione \texttt{Cleanup} è $O(m'\cdot k + m' \cdot k \cdot \log n)$.
+\end{itemize}
+Sommando i contributi delle singole fasi, la complessità temporale della \textit{Window Slide Function} nel caso peggiore è dominata dalla fase di calcolo euristico effettuata durante il clean up finale, portando il costo computazionale a essere:
+\[
+O\left(m^- \cdot k + m' \cdot k \cdot \log n \right)
+\]
+Il vero vantaggio computazionale risiede però nel fatto che, in uno scenario reale, all'interno del quale le variazioni della finestra sono ridotte ($m^-, m^+ \ll m'$) e la funzione greedy del clean up non deve effettuare un ricalcolo completo di tutto l'ipergrafo, il costo computazionale medio è inferiore rispetto a quello proposto nel caso pessimo teorico.
+
+\subsection*{Complessità Spaziale}
+
+La complessità spaziale viene determinata in base alle strutture dati necessarie a preservare lo stato tra uno scorrimento della finestra temporale e l'altro:
+\begin{itemize}
+    \item La rappresentazione della finestra corrente occupa uno spazio pari a $O(m' \cdot k)$.
+    \item Le strutture di tracciamento $CoverCount$ e $NodePresence$ richiedono uno spazio lineare rispetto al numero di nodi totali del sistema, ovvero nel caso peggiore $O(n)$.
+\end{itemize}
+La complessità spaziale complessiva è quindi $O(m' \cdot k + n)$.

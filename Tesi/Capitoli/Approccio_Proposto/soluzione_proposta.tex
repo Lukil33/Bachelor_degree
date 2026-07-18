@@ -1,0 +1,189 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Soluzione proposta}\label{sec:soluzione_proposta}
+
+Una volta definito in modo formale il problema, questa sezione definisce la strategia che è stata utilizzata per risolverlo in maniera efficiente.
+Nonostante la definizione del problema differisca dalle versioni più classiche intraviste negli approcci descritti all'interno dello stato dell'arte (si veda il capitolo~\ref{cha:stato_dell_arte_e_lavori_correlati}), molti dei concetti precedentemente citati verranno implementati all'interno del seguente lavoro.
+
+\subsection{Intuizione}
+
+L'obiettivo alla base dell'algoritmo proposto è quello di riuscire a minimizzare quanto più possibile il numero di vertici distinti selezionati nel corso dell'intera esecuzione, non andando però a modificare la cardinalità della soluzione e il costo computazionale richiesti per ogni variazione della finestra temporale.
+Di conseguenza per riuscire a minimizzare il numero di vertici distinti selezionati durante l'intera esecuzione vi è la necessità di aggiornare l'Hitting Set in modo graduale tenendo traccia delle operazioni più importanti che avvengono al suo interno.
+La strategia si articola attraverso i seguenti pilastri:
+\begin{itemize}
+    \item \textbf{Aggiornamento incrementale}: invece di ricalcolare l'Hitting Set da zero per ogni scorrimento della finestra temporale, la soluzione deve poter aggiornare la struttura esistente solo per gli intervalli di tempo inseriti.
+    \item \textbf{Inserimento condizionato}: l'inserimento di nuovi nodi all'interno dell'Hitting Set deve dare la precedenza, in presenza di una condizione paritaria, ai nodi che sono già stati parte dell'Hitting Set di avere precedenza rispetto ad altri nodi esterni.
+    \item \textbf{Ordinamento cronologico dell'Hitting Set}: tutti i nodi presenti all'interno dell'Hitting Set devono poter essere tracciati per permettere di essere scelti nuovamente in futuro.
+\end{itemize}
+Date le seguenti intuizioni generali di seguito riporto l'architettura di quella che in seguito è stata la soluzione da me proposta.
+
+\subsection{Architettura}
+
+Per descrivere l'architettura della soluzione proposta, l'intero ciclo di vita dell'algoritmo può essere ricondotto principalmente allo studio di una singola transizione temporale (o \textit{time-slice}), che viene rappresentata nella figura~\ref{fig:sliding_window_architecture}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    % Stili generali dei nodi
+    block/.style={
+        draw, 
+        rectangle, 
+        minimum width=2.2cm, 
+        minimum height=1.3cm, 
+        align=center, 
+        rounded corners=4pt, 
+        thick,
+        fill=white
+    },
+    % Stile per il mega-blocco contenitore
+    container/.style={
+        draw, 
+        rectangle, 
+        rounded corners=6pt, 
+        thick, 
+        inner sep=0.5cm, % Spazio tra i blocchi interni e il bordo della scatola
+        fill=gray!3
+    },
+    arrow/.style={
+        -{Stealth[scale=1.2]}, 
+        thick
+    }
+]
+
+    % --- 1. BLOCCHI INTERNI ---
+    \node[block] (rem) {};
+    \node[block, right=1cm of rem] (add) {};
+    \node[block, right=1cm of add] (clean) {};
+
+    % --- 2. CONTENITORE ESTERNO (Generato automaticamente intorno ai blocchi) ---
+    \node[container, fit=(rem) (add) (clean)] (windowBox) {};
+    
+    % Spostiamo i blocchi interni "in primo piano" così lo sfondo grigio del contenitore non li copre
+    % Nota: per farlo in modo pulito senza librerie "backgrounds", dichiariamo l'etichetta del contenitore in alto a sinistra
+    \node[anchor=north west, font=\footnotesize\ttfamily, xshift=2mm, yshift=-1mm] at (windowBox.north west) {\texttt{Window Slide Function}};
+
+    % Ripristiniamo i nodi sopra il contenitore per sicurezza visiva ri-assegnando il testo (TikZ li renderizza nell'ordine di scrittura)
+    \node[block, font=\footnotesize\ttfamily] at (rem) {\texttt{Remove Nodes}};
+    \node[block, font=\footnotesize\ttfamily] at (add) {\texttt{Add Nodes}};
+    \node[block, font=\footnotesize\ttfamily] at (clean) {\texttt{Clean Up}};
+
+    % --- 3. FRECCE INTERNE ---
+    \draw[arrow] (rem) -- (add);
+    \draw[arrow] (add) -- (clean);
+
+    % --- 4. INPUT ESTERNI (In basso a sinistra) ---
+    % Definiamo dei punti di coordinata per l'ingresso delle frecce
+    \coordinate (in) at ([yshift=-0.2cm]windowBox.west);
+    
+    \draw[arrow] ([xshift=-1.5cm]in) -- (in) node[left=1.5cm, font=\small\ttfamily] {Input};
+
+    % --- 5. OUTPUT ESTERNO (A destra) ---
+    \coordinate (out) at ([yshift=-0.2cm]windowBox.east);
+
+    \draw[arrow] (out) -- ([xshift=1.5cm]out) node[left=-1.5cm, font=\small\ttfamily] {Output};
+
+    % --- 6. LOOP DI FEEDBACK (HITTING-SET in alto) ---
+    % La freccia parte dalla destra del contenitore, sale e rientra a sinistra
+    \draw[arrow] ([yshift=0.2cm]windowBox.east) 
+        .. controls ([xshift=3cm, yshift=3cm]windowBox.east) and ([xshift=-3cm, yshift=3cm]windowBox.west) .. 
+        ([yshift=0.2cm]windowBox.west)
+        node[midway, above, font=\small\ttfamily] {Hitting-Set};
+
+\end{tikzpicture}
+\caption{Architettura della funzione Sliding Window dell'algoritmo.}\label{fig:sliding_window_architecture}
+\end{figure}
+
+Tale immagine rappresenza un ciclo della \texttt{Window Slide Function}, ovvero la funzione che si occupa della gestione dell'Hitting Set durante lo shift della finestra temporale.
+Il comportamento del framework può quindi essere modellato in modo ricorsivo.
+Assumendo che al tempo $\tau_k$ lo stato dell'Hitting Set sia noto e valido, il passaggio dal tempo $\tau_k$ al tempo $\tau_{k+1}$ attiva un flusso logico composto dalle seguenti macrooperazioni che verranno descritte nel dettaglio in seguito:
+\begin{itemize}
+    \item \textbf{\texttt{Remove Nodes}:} operazione durante la quale avviene la rimozione degli iperarchi fuoriusciti dalla finestra temporale e dei nodi dell'Hitting Set non più fondamentali, vengono inoltre aggiornate strutture dati di supporto.
+    \item \textbf{\texttt{Add Nodes}:} operazione durante la quale avviene l'aggiunta dei nuovi iperarchi e l'aggiunta dei nodi per completare l'Hitting Set già presente.
+    \item \textbf{\texttt{Clean Up}:} operazione durante la quale avviene la rimozione dei nodi ridondanti presenti dopo l'unione del vecchio e del nuovo Hitting Set.
+\end{itemize}
+
+\subsubsection*{Composizione dell'Input}
+
+L'input che la funzione \texttt{Window Slide Function} riceve è diviso in due componenti principali.
+La prima, fornita dall'utente o dalla \texttt{Window Slide Function} precedente, è l'Hitting Set valido al tempo iniziale $\tau_k$, indicata con $X(\tau_k)$, mentre la seconda, fornita dall'utente, è la lista degli iperarchi compresi all'interno della finestra temporale $[\tau_{k-1}, \tau_{k+1}+\epsilon]$, indicata con $W(\tau_k)$.
+Indicheremo in futuro l'insieme degli iperarchi compresi nell'intervallo temporale $[\tau_{k-1}, \tau_{k}]$, ovvero gli iperarchi in uscita come $W{(\tau_k)}^{-}$ e gli iperarchi compresi nell'intervallo temporale $[\tau_{k}+\epsilon, \tau_{k+1}+\epsilon]$, ovvero gli iperarchi in ingresso come $W{(\tau_k)}^{+}$.
+
+
+\subsubsection*{\texttt{Remove Nodes}}
+
+La funzione di rimozione dei nodi prende in input la lista degli iperarchi in uscita dalla finestra temporale forniti dall'utente $W{(\tau_k)}^{-}$ e l'Hitting Set valido al tempo $\tau_k$, indicato come $X(\tau_k)$.
+Una volta raccolti i dati forniti in input, la prima operazione da fare è quella di rimozione degli iperarchi presenti all'interno di $W{(\tau_k)}^{-}$ dalle strutture dati interne.
+Sia quindi
+\[
+W'(\tau_k) = W{(\tau_k)} \setminus W{(\tau_k)}^{-}
+\]
+l'insieme degli iperarchi che rimangono attivi dopo la fase di rimozione.
+Al termine della quale si effettua un controllo per verificare se i nodi precedentemente considerati all'interno dell'Hitting Set siano ancora validi o se non servano più a coprire degli archi altrimenti scoperti.
+La soluzione viene quindi ridotta ottenendo un insieme
+\[
+X{(\tau_k)}^{needed}\subseteq X(\tau_k)
+\]
+tale che:
+\[
+\forall (S,t')\in W'(\tau_k),\qquad X{(\tau_k)}^{needed}\cap S\neq\emptyset.
+\]
+Al termine della modifica dell'Hitting Set si passa il risultato alla funzione \texttt{Add Nodes}.
+
+\subsubsection*{\texttt{Add Nodes}}
+
+All'interno della funzione di aggiunta dei nodi si prendono come input gli iperarchi in ingresso $W{(\tau_k)}^{+}$, forniti dall'utente e l'Hitting Set valido dalla funzione di rimozione dei nodi, indicato con $X{(\tau_k)}^{needed}$.
+Dopodiché come primo passo, si effettua una scrematura degli iperarchi in ingresso eliminando quelli già coperti dalla soluzione corrente:
+\[
+W{(\tau_k)}^{unc} =\left\{ (S,t')\in W{(\tau_k)}^{+} \middle| S\cap X{(\tau_k)}^{needed}=\emptyset \right\}.
+\]
+L'insieme $W{(\tau_k)}^{unc}$ contiene dunque solamente gli iperarchi non coperti.
+Dopodiché si partiziona l'insieme $W{(\tau_k)}^{unc}$, in due sottoinsiemi disgiunti.
+Il primo contiene tutti gli iperarchi che contengono almeno un nodo che è stato selezionato almeno una volta all'interno del Hitting Set:
+\[
+W{(\tau_k)}^{reuse} =\left\{ (S,t')\in W{(\tau_k)}^{unc} \middle| S\cap R_{k-1}\neq\emptyset \right\},
+\]
+dove
+\[
+R_{k-1} =\bigcup_{i=0}^{k-1}X(i)
+\]
+rappresenta l'insieme di tutti i vertici utilizzati almeno una volta fino al passo precedente.
+Il secondo invece contiene tutti gli iperarchi che non contengono nodi che sono stati selezionati all'interno dell'Hitting Set:
+\[
+W{(\tau_k)}^{new} =\left\{ (S,t')\in W{(\tau_k)}^{unc} \middle| S\cap R_{k-1}=\emptyset \right\}.
+\]
+Per costruzione risulta:
+\[
+W{(\tau_k)}^{unc} =W{(\tau_k)}^{reuse}\cup W{(\tau_k)}^{new},\qquad W{(\tau_k)}^{reuse}\cap W{(\tau_k)}^{new}=\emptyset.
+\]
+Successivamente si effettua una ricerca del Minimum Hitting Set (MHS) attraverso l'utilizzo di metodologie greedy~\cite{johnson1974, chvatal1979} sull'insieme $W{(\tau_k)}^{new}$, creando così l'insieme $X{(\tau_k)}^{new}$.
+Infine si rimuovono da $W{(\tau_k)}^{reuse}$ tutti gli iperarchi contenenti almeno un elemento del nuovo Hitting Set $X{(\tau_k)}^{new}$:
+\[
+W{(\tau_k)}^{remaining} =\left\{ (S,t')\in W{(\tau_k)}^{reuse} \middle| S\cap X{(\tau_k)}^{new}=\emptyset \right\}
+\]
+e sugli iperarchi rimanenti si effettua un'ultima ricerca del Minimum Hitting Set (MHS) attraverso l'utilizzo di metodologie greedy sull'insieme $W{(\tau_k)}^{remaining}$ dando però priorità alla scelta dei nodi appartenenti a $R_{k-1}$ per garantire il riutilizzo massimale dei nodi.
+Quest'ultima operazione crea l'insieme $X{(\tau_k)}^{reuse}$, ovvero l'Hitting Set degli iperarchi con nodi riutilizzabili.
+
+\subsubsection*{\texttt{Clean Up}}
+
+La fase finale di \texttt{Clean Up} consiste nel prendere gli Hitting Set risultanti dalle precedenti operazioni, dunque: $X{(\tau_k)}^{needed}$, $X{(\tau_k)}^{new}$ e $X{(\tau_k)}^{reuse}$ e unirli in un solo Hitting Set generale attraverso la seguente operazione:
+\[
+X{(\tau_{k+1})}^{complete} = X{(\tau_k)}^{needed} \cup X{(\tau_k)}^{new} \cup X{(\tau_k)}^{reuse}.
+\]
+Successivamente si esegue un controllo per verificare se ciascun nodo presente all'interno dell'Hitting Set $X{(\tau_{k+1})}^{complete}$ copra da solo almeno un iperarco e si rimuovono tutti quelli che non rispettano tale regola
+\[
+X{(\tau_{k+1})}^{reduced} =\left\{ X{(\tau_{k+1})}^{complete} \setminus X{(\tau_{k+1})}^{redundant} \right\}
+\]
+dove
+\[
+X{(\tau_{k+1})}^{redundant} = \left\{v\in X{(\tau_{k+1})}^{complete},\nexists (S,t')\in W' \middle| S\cap X{(\tau_{k+1})}^{complete}=\{v\}\right\}.
+\]
+Infine si controlla se il nuovo Hitting Set $X{(\tau_{k+1})}^{reduced}$ copre completamente gli iperarchi attivi e nel caso in cui la copertura non fosse globale si applica un'ultima volta l'algoritmo greedy con priorità per la ricerca del Minimum Hitting Set (MHS) sugli elementi $W'$ che non sono ancora stati coperti, $X{(\tau_{k+1})}^{patch}$.
+Alla fine di tutto si determina quindi
+\[
+X{(\tau_{k+1})} = X{(\tau_{k+1})}^{reduced} \cup X{(\tau_{k+1})}^{patch}.
+\]
+
+\subsubsection*{Composizione dell'Output}
+La funzione \texttt{Window Slide Function} rilascia infine in output l'insieme $X{(\tau_{k+1})}$, ovvero il Minimum Hitting Set (MHS) calcolato per la finestra temporale che si estende da $\tau_{k+1}$ a $\tau_{k+1}+\epsilon$.

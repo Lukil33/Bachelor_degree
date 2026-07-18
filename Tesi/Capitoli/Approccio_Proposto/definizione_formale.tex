@@ -1,0 +1,39 @@
+% Da controllare l'umanità del testo, per adesso è mid
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Definizione formale del problema}\label{sec:definizione_formale}
+
+Il problema proposto si colloca all'interno di un contesto dinamico, dove le relazioni tra le entità (rappresentate come sottoinsiemi di vertici) si manifestano nel tempo e mantengono la loro rilevanza solo per un intervallo limitato, decorso il quale decadono.
+L'obiettivo è quello di mantenere un Hitting Set (si veda il Capitolo~\ref{sec:il_problema_dell_hitting_set}) in grado di coprire l'insieme completo degli iperarchi. La soluzione deve essere aggiornata in modo incrementale ad ogni movimento della finestra temporale, minimizzando il costo computazionale ed evitando un ricalcolo completo della soluzione a ogni shift.
+In termini formali, stiamo trattando una variante online del problema del \textit{Temporal Hitting Set} definita in un contesto di \textit{sliding window}.
+
+\subsection*{Modello}
+
+Per descrivere al meglio l'intuizione, modelliamo l’input come un ipergrafo temporale $H = (V, E)$, dove ogni iperarco $(S, t)$ consiste in un sottoinsieme di vertici $S \subseteq V$ in un istante temporale $t \in \mathbb{T}$, dove $\mathbb{T}$ rappresenta il dominio temporale in $\mathbb{R}_{\ge 0}$, che definisce il tempo di arrivo di tale iperarco.
+Fissata un'ampiezza di finestra $\epsilon$ grande a piacere, definiamo l’insieme degli iperarchi attivi al tempo $t$ come:
+\[
+W(t) = \{ (S, t') \in E \mid t - \epsilon \le t' \le t \}.
+\]
+Un iperarco $(S, t')$ è quindi attivo nell'intervallo $[t - \epsilon, t]$, dopo il quale \textit{decade} ed esce dalla finestra.
+L'avanzamento della finestra si basa su dei \textbf{passi temporali fissi e prefissati} di ampiezza $\delta > 0$, rendendo il sistema indipendentemente da quando e quanti iperarchi arrivano nel frattempo.
+Definiamo quindi gli \textit{istanti di osservazione}
+\[
+\tau_k = k \cdot \delta, \qquad k = 0, 1, 2, \dots
+\]
+In corrispondenza di ciascun $\tau_k$, l'algoritmo deve produrre un \textit{hitting set} $X(\tau_k) \subseteq V$ ammissibile per $W(\tau_k)$, cioè tale che
+\[
+\forall (S, t') \in W(\tau_k), \quad X(\tau_k) \cap S \neq \emptyset,
+\]
+tenendo conto di tutti gli iperarchi arrivati nell'intervallo $(\tau_{k-1}, \tau_k)$ e di quelli scaduti perché $t' < \tau_k - \epsilon$, e aggiornando dunque la soluzione utilizzata al tempo $X(\tau_{k})$ a partire da $X(\tau_{k-1})$, ponendo come condizione iniziale $X(\tau_0) = \emptyset$.
+
+\subsection*{Obiettivo}
+
+L'algoritmo in questione deve produrre, per ogni istante di osservazione $\tau_k$ un insieme $X(\tau_k) \subseteq V$ tale che $X(\tau_k)$ sia un hitting set ammissibile per la finestra attiva $W(\tau_k)$.
+Tra tutte le soluzioni ammissibili, si desidera ottimizzare i seguenti criteri:
+\begin{itemize}
+    \item \textbf{Dimensione della soluzione}: minimizzare la cardinalità della soluzione $|X(\tau_k)|$, in modo da mantenere minimo il numero di vertici selezionati ad ogni istante temporale.
+    \item \textbf{Costo di aggiornamento}: minimizzare il numero di vertici distinti selezionati nel corso dell'intera esecuzione, $R=\left|\bigcup_{k} X(\tau_k)\right|$, così da aumentare il riutilizzo dei nodi della soluzione nel tempo ed evitare cambiamenti eccessivamente frequenti nei vertici utilizzati.
+    \item \textbf{Costo computazionale}: minimizzare il tempo di aggiornamento $c_k$ ossia il tempo richiesto per ottenere $X(\tau_k)$ a partire dall'informazione disponibile al passo precedente, mantenendo il calcolo compatibile con il ritmo di avanzamento della finestra. Questo ci permette, di riflesso, di minimizzare il tempo di esecuzione totale del nostro algoritmo.
+\end{itemize}
+L’obiettivo completo del problema è dunque quello di mantenere nel tempo una sequenza di \textit{Hitting Set} ammissibili che siano simultaneamente compatti, stabili ed efficienti da aggiornare in presenza dell'inserimento e della scadenza degli iperarchi.

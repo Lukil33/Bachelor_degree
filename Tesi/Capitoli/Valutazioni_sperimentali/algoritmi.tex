@@ -1,0 +1,29 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Varianti degli algoritmi analizzati}\label{sec:varianti_degli_algoritmi_analizzati}
+
+Per analizzare l'impatto che ogni componente della soluzione implementata ha sul sistema intero abbiamo deciso di testare diverse versioni dello stesso algoritmo, variando per ognuna di esse una scelta progettuale, in modo da valutarne l'importanza relativa.
+Questo approccio permette di isolare il contributo di una scelta progettuale alla volta, evitando che le differenze osservate tra le configurazioni siano attribuibili a più fattori sovrapposti.
+Sono state definite quattro varianti diverse di algoritmi, riassunte di seguito:
+\begin{itemize}
+    \item \textbf{Iterative Greedy}: questo algoritmo consiste in una versione nella quale viene applicato un algoritmo greedy in maniera naïve, che ricalcola da capo l'intero Hitting Set ad ogni spostamento della finestra temporale.
+    \item \textbf{Sliding different Greedy}: questo algoritmo rappresenta una variazione di quello presentato nella soluzione proposta (si veda il Capitolo~\ref{sec:soluzione_proposta}); in particolare vengono modificate le funzioni \texttt{GreedyHittingSet} e \texttt{ReuseGreedyHittingSet}, applicando una tipologia diversa di algoritmo greedy per valutare il contributo di tale algoritmo sia dal punto di vista del tempo di esecuzione che della dimensione media dell'Hitting Set risultante.
+    \item \textbf{Sliding New Nodes}: questo algoritmo rappresenta una variazione di quello presentato nella soluzione proposta (si veda il Capitolo~\ref{sec:soluzione_proposta}); in particolare viene modificata la gestione dei pesi all'interno della funzione \texttt{ReuseGreedyHittingSet}, i pesi vengono invertiti portando l'algoritmo a preferire la scelta di nodi senza uno storico all'interno degli Hitting Set precedenti.
+    \item \textbf{Sliding Reuse}: questo algoritmo coincide con quello presentato nella soluzione proposta (si veda il Capitolo~\ref{sec:soluzione_proposta}).
+\end{itemize}
+
+\subsection*{Algoritmi greedy utilizzati}
+
+Nel corso della descrizione della soluzione proposta (si veda il Capitolo~\ref{sec:soluzione_proposta}) e della precedente esposizione delle varianti algoritmiche utilizzate nella fase di test, sono stati citati più volte alcuni algoritmi risolutivi greedy, senza però aver approfondito i rispettivi dettagli implementativi.
+Come discusso nella sezione delle soluzioni euristiche per il problema dell'Hitting Set analizzato in ambito statico (si veda la Sezione~\ref{sec:minimum_hitting_set_in_ambito_statico}), gli algoritmi greedy per il Minimum Hitting Set possono essere classificati in euristiche \emph{vertex-oriented}, che privilegiano il contributo globale alla copertura, ed euristiche \emph{hyperedge-oriented}, che operano invece una scelta locale basata sull'iperarco analizzato~\cite{gainer2017}.
+Gli algoritmi greedy utilizzati all'interno di questo lavoro fanno parte della famiglia delle euristiche \emph{hyperedge-oriented}, più precisamente sono state utilizzare due varianti distinte:
+\begin{itemize}
+    \item \textbf{Nodo di cardinalità massima in iperarco minimo}: variante utilizzata nelle versioni \texttt{Iterative Greedy}, \texttt{Sliding New Nodes} e \texttt{Sliding Reuse}.
+    Consiste nella pratica di selezionare come nuovo nodo dell'Hitting Set il nodo di cardinalità massima che fa parte dell'iperarco non coperto di cardinalità minima.
+    La versione della funzione \texttt{ReuseGreedyHittingSet} si differenzia dalla funzione \texttt{GreedyHittingSet} in quanto in caso di più nodi con la stessa cardinalità massima si seleziona quello con uno storico all'interno degli Hitting Set precedenti, eccezione fatta per la versione \texttt{Sliding New Nodes} che come spiegato in precedenza inverte la scelta di priorità.
+    \item \textbf{Nodo di cardinalità massima in iperarco randomico}: variante utilizzata nella versione \texttt{Sliding different Greedy}.
+    Consiste nella pratica di selezionare come nuovo nodo dell'Hitting Set il nodo di cardinalità massima che fa parte di un iperarco non coperto selezionato in maniera randomica.
+    La versione della funzione \texttt{ReuseGreedyHittingSet} si differenzia dalla funzione \texttt{GreedyHittingSet} in quanto in caso di più nodi con la stessa cardinalità massima si seleziona quello con uno storico all'interno degli Hitting Set precedenti.
+\end{itemize}

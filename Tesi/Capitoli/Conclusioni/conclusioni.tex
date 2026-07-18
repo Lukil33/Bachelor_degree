@@ -1,0 +1,24 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\chapter{Conclusioni e sviluppi futuri}\label{cha:conclusioni_e_sviluppi_futuri}
+
+Il presente lavoro di tesi ha affrontato il problema combinatorio dell'Hitting Set in ipergrafi temporali, proponendo per esso una soluzione incrementale basata su una finestra temporale a scorrimento.
+L'obiettivo del progetto è stato quello di evitare il ricalcolo completo ad ogni spostamento della finestra temporale, in modo da poter ottimizzare i tempi e la dimensione della soluzione stessa, introducendo un concetto di stabilità temporale per aumentare il riutilizzo dei nodi.
+L'algoritmo sviluppato sfrutta il principio di stabilità temporale di una porzione delle interazioni per evitare il ricalcolo totale dell'Hitting Set.
+Tale soluzione è stata implementata attraverso l'utilizzo della funzione \texttt{Window Slide Function} e mediante le relative strutture di supporto come \texttt{NodePresence} per tenere traccia dei nodi visitati in precedenza. 
+La seguente funzione è stata successivamente valutata sperimentalmente attraverso l'utilizzo di quattro dataset reali strutturalmente diversi in modo da poter analizzare i trade-off strutturali e computazionali della soluzione.
+L'utilizzo dell'approccio incrementale è risultato particolarmente efficace all'interno di scenari caratterizzati da distribuzioni temporali uniformi o più in generale senza concentrazioni troppo elevate, in tali contesti, l'algoritmo è risultato significativamente migliore rispetto ai classici approcci tradizionali, riducendo sia la dimensione media dell'Hitting Set che il numero totale di nodi distinti coinvolti nell'intera evoluzione della rete.
+Di contro, sono stati però evidenziati dei limiti sistematici legati alla natura dei dati, in presenza di distribuzioni fortemente intermittenti e concentrate, il costo computazionale richiesto per la gestione delle strutture dati ausiliarie e per le fasi di potatura delle ridondanze non viene compensato da un reale guadagno nella qualità della soluzione.
+Il ricalcolo della soluzione da zero, può risultare una soluzione praticabile all'interno di questi specifici scenari in quanto competitivamente preferibile in termini di tempo di esecuzione rispetto all'algoritmo sviluppato.
+L'analisi ha infine confermato come l'ampiezza della finestra temporale $\epsilon$, il passo di scorrimento della finestra $\delta$ e il loro rapporto rappresentano ulteriori parametri fondamentali per riuscire a determinare l'efficacia della soluzione.
+
+\section{Sviluppi futuri}
+
+I limiti mostrati dai risultati ottenuti aprono la strada a diverse direzioni di ricerca futura:
+\begin{itemize}
+    \item \textbf{Parallelizzazione e Computazione Distribuita}: data l'attuale implementazione in modalità single-thread, un'estensione naturale prevede lo sviluppo dell'algoritmo per architetture parallele o contesti di stream processing, parallelizzando le fasi di verifica delle ridondanze e di aggiornamento dei nodi.
+    \item \textbf{Strategie di Epurazione Adattive della Memoria}: per mitigare l'overhead della struttura NodePresence, si potrebbero studiare meccanismi di decadimento temporale o politiche di rimozione basate su un fattore di dimenticanza, eliminando dalla cronologia i nodi inattivi da troppo tempo.
+    \item \textbf{Approssimazione Garantita e Rilassamento del Problema}: infine, risulterebbe molto interessante dal punto di vista teorico analizzare formalmente il fattore di approssimazione dell'algoritmo incrementale proposto rispetto all'ottimo globale e valutarne eventuali varianti euristiche e probabilistiche.
+\end{itemize}

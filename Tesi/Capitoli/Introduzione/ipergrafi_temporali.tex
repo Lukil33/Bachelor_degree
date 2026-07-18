@@ -1,0 +1,28 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Ipergrafi temporali}\label{sec:ipergrafi_temporali}
+
+Come descritto in precedenza, gli ipergrafi permettono di rappresentare interazioni che coinvolgono più entità contemporaneamente, ma la formulazione classica della struttura dati riesce a descrivere soltanto la struttura statica del sistema.
+Tale rappresentazione risulta però limitata nel momento in cui entrano in considerazione contesti reali e dinamici, come le reti sociali: le relazioni tra individui evolvono nel tempo, dunque una rappresentazione statica del sistema non risulta sufficiente a catturare la complessità dello stesso.
+Per questo motivo, è necessario estendere il concetto di ipergrafo integrando la dimensione temporale.
+Tale integrazione genera una struttura dati che prende il nome di \textit{ipergrafo temporale}, la quale permette di rappresentare simultaneamente la natura collettiva delle interazioni e la sua evoluzione nel tempo~\cite{cencetti2021}.
+Dal punto di vista formale, un ipergrafo temporale è una coppia $H_t = (V, E_T)$, all'interno della quale $V$ è l'insieme dei nodi e $E_T$ è l'insieme delle coppie $(E, t)$, definito come: 
+\[
+    E_T \subseteq \{(E,t) \mid E \subseteq V, E \neq \emptyset, t \in T\}.
+\]
+All'interno di $E_T$ ogni elemento $(E,t)$ rappresenta un'interazione che coinvolge simultaneamente tutti i nodi presenti all'interno dell'iperarco $E$ all'istante $t$.
+All'interno del seguente lavoro l'informazione temporale viene associata a un singolo istante di tempo $t$, però tale informazione può essere associata anche ad un intervallo di tempo.
+L'introduzione della componente temporale viene dunque utilizzata per distinguere sistemi che, pur condividendo la stessa struttura aggregata, differiscono nell'ordine delle interazioni, un aspetto spesso determinante nello studio di processi dinamici, all'interno dei quali la sequenza degli eventi può influenzare significativamente l'evoluzione del sistema~\cite{holme2012}.
+
+\subsection{Finestra temporale a scorrimento}
+
+All'interno dei sistemi applicativi, l'analisi in modo ripetitivo di tutte le interazioni presenti dall'inizio del periodo di osservazione porta spesso a rappresentazioni poco significative della realtà.
+Relazioni più recenti devono spesso risultare più rilevanti rispetto a relazioni avvenute in passato e aggregare il tutto indiscriminatamente rischia di appiattire informazioni temporali importanti.
+Per ovviare a questo problema è stata introdotta l'idea di \textit{finestra temporale a scorrimento}.
+Data una dimensione della finestra temporale $\Delta T$, ogni interazione osservata all'istante $t$ viene considerata valida solamente se compresa all'interno dell'intervallo temporale $[t, t + \Delta T]$, trascorso il quale, essa non concorre più alla rappresentazione del sistema.
+In altre parole, se ci troviamo in un generico istante $t_c$, l'ipergrafo deve risultare costituito esclusivamente dagli iperarchi corrispondenti a eventi verificatisi nell'intervallo $[t_c - \Delta T, t_c]$.
+L'utilità di questo approccio è immediata: durante l'analisi di un social network, ad esempio, potrebbe risultare sensato analizzare le conversazioni degli ultimi sette giorni piuttosto che quelle presenti dalla nascita di tale social network, mentre in un contesto aziendale, si potrebbe preferire analizzare gli eventi avvenuti nella durata di un mese piuttosto che quelli dell'intero anno.
+Una caratteristica fondamentale è la possibilità da parte della finestra di continuare a scorrere lungo l'asse temporale con un passo di avanzamento $\delta$, differente rispetto all'ampiezza $\Delta T$ della finestra temporale, per fare in modo che rimanga aggiornata con lo scorrere del tempo.
+Ad ogni spostamento viene costruita una nuova istanza dell'ipergrafo, contenente esclusivamente le interazioni comprese nella finestra corrente.

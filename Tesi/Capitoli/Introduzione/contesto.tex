@@ -1,0 +1,18 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+La crescente disponibilità di dati relazionali da studiare negli ultimi anni ha portato ad un sempre maggiore interesse nello studio di strutture dati capaci di rappresentare interazioni complesse tra le varie entità.
+In letteratura, tali tipologie di relazioni erano originariamente gestite attraverso l'utilizzo dei \emph{grafi}, strutture matematiche utilizzate per modellare relazioni uno-a-uno tra più oggetti.
+Tuttavia, nonostante il loro grande successo, in molti scenari applicativi tale rappresentazione risulta troppo restrittiva, specialmente quando vi è la necessità di considerare interazioni che coinvolgono più entità contemporaneamente.
+All'interno di numerose applicazioni reali, quali per esempio le comunicazioni presenti all'interno dei social media, così come le interazioni che avvengono all'interno di una transazione bancaria, non è sempre permessa una rappresentazione tramite grafi senza causare una significativa perdita di informazioni.
+Poiché tale perdita di informazione risulta inevitabile, è stato necessario introdurre una rappresentazione matematica più di alto livello, ovvero gli \emph{ipergrafi}.
+Tali rappresentazioni matematiche costituiscono una generalizzazione dei grafi classici, in quanto consentono a ciascun iperarco di connettere un numero arbitrario di nodi, rendendoli adatti a modellare interazioni di ordine superiore~\cite{antelmi2023}~\cite{bretto2013}.
+Questa tipologia di struttura dati risulta particolarmente utile in tutti quei casi in cui l'obiettivo è rappresentare interazioni complesse senza perdere informazioni strutturali, che i grafi tradizionali tenderebbero invece a scartare.
+Bisogna inoltre tenere conto che nella maggior parte degli scenari applicativi le interazioni tra entità non rimangono statiche nel tempo, ma evolvono subendo delle variazioni strutturali~\cite{holme2012}.
+Inserendo la variante evolutiva, nuove interazioni vengono create, mentre altre tendono a scomparire, dando vita a un sistema complesso e dinamico che porta una struttura dati teoricamente statica a evolversi nel tempo.
+Questo tipo di sfida rende dunque necessaria la gestione di tale evoluzione temporale, al fine di poter rappresentare sempre i dati in modo accurato.
+``Giusto per citare alcuni esempi, la modellazione di grafi temporali e l'analisi delle proprietà temporali possono trovare applicazione nella sociologia e nell'analisi delle reti sociali [\ldots]; nella sicurezza e nel calcolo distribuito [\ldots]; nella biologia''~\cite{lotito2020}.
+L'analisi di grandi strutture dinamiche introduce inoltre importanti problemi computazionali~\cite{lotito2020}.
+In particolare, è spesso necessario aggiornare continuamente le informazioni di interesse senza poter ricalcolare da capo l'intera soluzione a ogni passo temporale.
+Di conseguenza, lo studio di tecniche efficienti per il mantenimento di proprietà e strutture combinatorie in ambienti dinamici e temporali svolge un ruolo centrale.

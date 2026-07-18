@@ -1,0 +1,13 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Configurazione e ambiente di test}\label{sec:configurazione_e_ambiente_di_test}
+
+Gli esperimenti che seguiranno all'interno di questo capitolo sono stati condotti all'interno dello stesso ambiente e sulla stessa macchina, in modo da poter garantire omogeneità tra i vari casi di test.
+Inoltre, per garantire confrontabilità e ripetitività dei test eseguiti procedo a specificare le caratteristiche tecniche delle componenti da me utilizzate.
+\begin{itemize}
+    \item \textbf{Hardware}: i test sono stati effettuati nella loro interezza su un laptop con processore AMD Ryzen 7 5700U e con 8 GB di memoria RAM.
+    Poiché l'algoritmo proposto non implementa logiche di parallelizzazione, le prestazioni riportate si riferiscono esclusivamente all'esecuzione del processo in modalità \textit{single-thread}.
+    \item \textbf{Software}: il programma è stato sviluppato interamente in Python (v 3.14), sfruttando delle librerie di supporto quali \texttt{hypergraphx}~\cite{lotito2023} per la gestione degli ipergrafi temporali e \texttt{time} per la misurazione dei tempi di esecuzione.
+\end{itemize}

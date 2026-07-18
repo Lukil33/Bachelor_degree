@@ -1,0 +1,17 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\chapter*{Abstract}\label{cha:abtract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+L'aumento nella disponibilità di dati relazionali complessi ha portato negli ultimi anni ad un interesse crescente verso le strutture dati capaci di modellare interazioni di ordine superiore, superando la tradizionale natura binaria dei grafi~\cite{battiston2020, antelmi2023}.
+Nonostante gli ipergrafi offrano una rappresentazione completa di tali dati relazionali complessi~\cite{bretto2013}, al fine di riuscire ad applicarli in contesti reali è necessaria una visione non statica degli stessi, attraverso l'introduzione del parametro temporale.
+Questo lavoro affronta il problema combinatorio dell'Hitting Set, uno dei problemi NP-hard introdotti da Karp~\cite{karp1972}, applicando gli ipergrafi in un contesto temporale e focalizzandosi dunque sul mantenimento incrementale di un insieme di nodi in grado di coprire tutti gli iperarchi attivi all'interno di una finestra temporale a scorrimento.
+L'obiettivo di questo lavoro è dunque al contempo quello di garantire la validità e l'ottimalità della soluzione proposta.
+Al fine di garantire la validità della soluzione è necessario offrire una copertura completa dell'Hitting Set al variare del tempo, mentre per garantire il miglior risultato possibile è necessario ottimizzare tre metriche fondamentali: la dimensione della soluzione, il costo computazionale di aggiornamento e la stabilità temporale, definita come la minimizzazione del numero totale di nodi distinti selezionati nel corso dell'intera esecuzione.
+Per riuscire a garantire una soluzione valida e ottimale è stata progettata un'architettura incrementale articolata in tre processi separati: il processo di rimozione dei nodi dell'Hitting Set, il quale consiste nella rimozione degli iperarchi scaduti e dei nodi non più essenziali, il processo di inserimento dei nuovi nodi, il quale consiste nell'aggiunta dei nuovi iperarchi e nella ricerca di un nuovo Hitting Set, infine nel processo finale di pulizia, il quale consiste in una fase di potatura delle ridondanze incrociate.
+È stata infine messa alla prova l'efficacia dell'algoritmo, attraverso una campagna sperimentale basata su quattro dataset reali, differenziabili per dimensione, distribuzione e densità.
+Per ogni caso di test sono state inoltre valutate diverse istanze dell'algoritmo al fine di isolare le componenti più impattanti e significative e permettendo un confronto sui risultati ottenuti.
+I risultati infine mostrano come la soluzione proposta sia in grado di garantire risultati eccellenti in alcuni contesti caratterizzati da una distribuzione degli arrivi uniforme, riuscendo ad aumentare significativamente il riutilizzo dei nodi e a diminuire la dimensione media della soluzione, con benefici crescenti all'aumentare del rapporto tra ampiezza della finestra e passo di scorrimento.
+I risultati non sono però completamente positivi, il costo di mantenimento delle strutture dati ausiliarie ed il costo della fase di pulizia finale rendono l'approccio incrementale meno competitivo per non dire completamente inefficiente sul tempo di esecuzione puro in presenza di distribuzioni intermittenti o concentrate, in presenza di tali contesti il ricalcolo da zero dell'Hitting Set può risultare dunque preferibile o, in casi più estremi, l'unica opzione disponibile.

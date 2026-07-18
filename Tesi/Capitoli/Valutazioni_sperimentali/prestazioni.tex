@@ -1,0 +1,181 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Analisi delle prestazioni computazionali}\label{sec:analisi_delle_presentazioni_computazionali}
+
+In questa sezione vengono presentati e analizzati i riscontri empirici ottenuti dall'esecuzione della soluzione proposta (si veda il Capitolo~\ref{sec:soluzione_proposta}) mettendoli a confronto con delle versioni di confronto (si veda il Capitolo~\ref{sec:varianti_degli_algoritmi_analizzati}) sulle istanze di benchmark precedentemente caratterizzate (si veda il Capitolo~\ref{sec:istanze_di_benchmark_e_caratterizzazione_dei_dati}).
+L'obiettivo fondamentale è quello di quantificare l'efficienza e l'efficacia dell'approccio basato sulla finestra temporale a scorrimento, evidenziandone la scalabilità al crescere della dimensionalità del problema.
+
+\subsection{Metriche di valutazione e protocollo di tesi}
+
+Per valutare qualitativamente il comportamento del sistema sono state analizzate le tre metriche precedentemente citate durante la definizione formale del problema (si veda il Capitolo~\ref{sec:definizione_formale}), ovvero:
+\begin{itemize}
+    \item \textbf{Tempo di esecuzione ($T_{exec}$)}: espresso in secondi, misura il tempo impiegato da parte dell'elaboratore per arrivare al termine dell'esecuzione dell'algoritmo analizzato.
+    \item \textbf{Dimensione media dell'Hitting Set ($\overline{|X|}_{\tau}$)}: espresso attraverso il numero di nodi, misura la cardinalità media temporale dell'insieme di copertura calcolato durante l'intero periodo di esecuzione.
+    \item \textbf{Numero nodi distinti scelti ($R$)}: espresso attraverso il numero di nodi, rappresenta il volume complessivo di vertici unici accumulati nell'Hitting Set globale al termine del processo (si veda il Capitolo~\ref{sec:definizione_formale}).
+\end{itemize}
+L'analisi congiunta delle tre metriche permette di mappare accuratamente il trade-off dell'algoritmo proposto tra l'efficienza computazionale del codice e la qualità delle soluzioni generate, offrendo una panoramica completa sulla scalabilità dell'approccio proposto.
+
+\subsection{Aspettative sperimentali e risultati}
+
+Prima di analizzare direttamente i risultati sperimentali, è importante definire un comportamento atteso dell'algoritmo in tutte le sue versioni in modo da poter successivamente confrontare le aspettative con i risultati effettivi.
+Poiché l'efficienza della soluzione si basa parzialmente anche sul rapporto tra la dimensione della finestra temporale considerata $(\epsilon)$ e la dimensione dello scorrimento computazionale della stessa $(\delta)$, abbiamo deciso, per ogni dataset analizzato, di testare tre rapporti differenti tra $\epsilon$ e $\delta$ in modo da poter analizzare come cambia il risultato al variare delle loro dimensioni.
+
+\subsubsection*{Contacts high school}
+
+La caratteristica particolare di questo dataset è la distribuzione di arrivo degli iperarchi marcatamente intermittente (si veda Figura~\ref{fig:distribuzione_dataset} a).
+Su tale base si può affermare che l'efficacia dell'algoritmo proposto e delle rispettive estensioni può essere garantita solo in base al rapporto che la dimensione della finestra temporale e la dimensione del relativo scorrimento hanno con i picchi e le valli di attività della distribuzione mostrata.
+La soluzione proposta riesce dunque a garantire prestazioni ottimali solo a condizione che l'ampiezza della finestra temporale sia sufficiente a intercettare più picchi concorrenti e che il passo di scorrimento sia almeno pari al loro tempo di inter-arrivo.
+In pratica l'unico modo affinché l'algoritmo riesca a funzionare con questa distribuzione degli archi in ingresso è selezionando delle dimensioni di $\epsilon$ e $\delta$ in grado di mascherare la presenza dei burst temporali.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/time_distribution_graphs/contacts_high_school.pdf}
+        \vspace{-9mm}
+        \caption*{Tempo di esecuzione}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/size_distribution_graphs/contacts_high_school.pdf}
+        \vspace{-9mm}
+        \caption*{Dimensione media Hitting Set}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/reuse_distribution_graphs/contacts_high_school.pdf}
+        \vspace{-9mm}
+        \caption*{Numero nodi distinti scelti}
+    \end{minipage}
+
+    \vspace{2mm}
+    % Legenda manuale
+    \begin{tikzpicture}
+        \draw[blue, thick] (0,0) -- (0.5,0); \node[right] at (0.5,0) {Iterative Greedy};
+        \draw[green, thick] (5,0) -- (5.5,0); \node[right] at (5.5,0) {Sliding different Greedy};
+        \draw[orange, thick] (10,0) -- (10.5,0); \node[right] at (10.5,0) {Sliding New Nodes};
+        \draw[red, thick] (15,0) -- (15.5,0); \node[right] at (15.5,0) {Sliding Reuse};
+    \end{tikzpicture}
+    
+\end{figure}
+
+\subsubsection*{Coauth history}
+
+Come nel grafico precedente, la caratteristica particolare del dataset risiede nella sua distribuzione di arrivo degli iperarchi (si veda Figura~\ref{fig:distribuzione_dataset} b).
+La presenza di un picco di nodi verso la fine del periodo temporale studiato non permette di sfruttare la conoscenza acquisita dalle finestre precedenti, limitando le situazioni in cui l'algoritmo riesce a fornire prestazioni migliori.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/time_distribution_graphs/coauth_history.pdf}
+        \vspace{-9mm}
+        \caption*{Tempo di esecuzione}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/size_distribution_graphs/coauth_history.pdf}
+        \vspace{-9mm}
+        \caption*{Dimensione media Hitting Set}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/reuse_distribution_graphs/coauth_history.pdf}
+        \vspace{-9mm}
+        \caption*{Numero nodi distinti scelti}
+    \end{minipage}
+
+    \vspace{2mm}
+    % Legenda manuale
+    \begin{tikzpicture}
+        \draw[blue, thick] (0,0) -- (0.5,0); \node[right] at (0.5,0) {Iterative Greedy};
+        \draw[green, thick] (5,0) -- (5.5,0); \node[right] at (5.5,0) {Sliding different Greedy};
+        \draw[orange, thick] (10,0) -- (10.5,0); \node[right] at (10.5,0) {Sliding New Nodes};
+        \draw[red, thick] (15,0) -- (15.5,0); \node[right] at (15.5,0) {Sliding Reuse};
+    \end{tikzpicture}
+    
+\end{figure}
+
+\subsubsection*{Email Enron}
+
+A differenza dei grafici precedenti, la distribuzione di arrivo degli iperarchi del dataset non sembra poter creare particolari problemi, in quanto la fase di picco è situata a metà del periodo temporale studiato (si veda Figura~\ref{fig:distribuzione_dataset} c).
+Tale dataset però risulta essere particolarmente denso (si veda Tabella~\ref{tab:caratteristiche_dataset}), fattore che potrebbe portare a una minore differenza nel numero di nodi distinti scelti $(R)$ e a un buon grado di approssimazione dell'Hitting Set sia da parte degli algoritmi basati su finestra temporale a scorrimento, sia da parte di quelli greedy iterativi.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/time_distribution_graphs/email_Enron.pdf}
+        \vspace{-9mm}
+        \caption*{Tempo di esecuzione}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/size_distribution_graphs/email_Enron.pdf}
+        \vspace{-9mm}
+        \caption*{Dimensione media Hitting Set}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/reuse_distribution_graphs/email_Enron.pdf}
+        \vspace{-9mm}
+        \caption*{Numero nodi distinti scelti}
+    \end{minipage}
+
+    \vspace{2mm}
+    % Legenda manuale
+    \begin{tikzpicture}
+        \draw[blue, thick] (0,0) -- (0.5,0); \node[right] at (0.5,0) {Iterative Greedy};
+        \draw[green, thick] (5,0) -- (5.5,0); \node[right] at (5.5,0) {Sliding different Greedy};
+        \draw[orange, thick] (10,0) -- (10.5,0); \node[right] at (10.5,0) {Sliding New Nodes};
+        \draw[red, thick] (15,0) -- (15.5,0); \node[right] at (15.5,0) {Sliding Reuse};
+    \end{tikzpicture}
+    
+\end{figure}
+
+\subsubsection*{Crypto bitcoin}
+
+L'ultimo dataset risulta essere quello più favorevole dal punto di vista dell'algoritmo da me sviluppato, in quanto presenta una distribuzione di arrivo quasi costante e di una struttura non particolarmente densa.
+In presenza di tali condizioni, ci aspettiamo che il nostro algoritmo riesca a sfruttare al meglio il funzionamento della finestra temporale, mentre, a causa della natura sparsa del dataset, ci aspettiamo che gli algoritmi greedy iterativi non riescano a ottenere risultati altrettanto buoni.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/time_distribution_graphs/crypto_bitcoin_201601.pdf}
+        \vspace{-9mm}
+        \caption*{Tempo di esecuzione}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/size_distribution_graphs/crypto_bitcoin_201601.pdf}
+        \vspace{-9mm}
+        \caption*{Dimensione media Hitting Set}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth, trim={0cm 0cm 5cm 0cm}, clip]{Immagini/reuse_distribution_graphs/crypto_bitcoin_201601.pdf}
+        \vspace{-9mm}
+        \caption*{Numero nodi distinti scelti}
+    \end{minipage}
+
+    \vspace{2mm}
+    % Legenda manuale
+    \begin{tikzpicture}
+        \draw[blue, thick] (0,0) -- (0.5,0); \node[right] at (0.5,0) {Iterative Greedy};
+        \draw[green, thick] (5,0) -- (5.5,0); \node[right] at (5.5,0) {Sliding different Greedy};
+        \draw[orange, thick] (10,0) -- (10.5,0); \node[right] at (10.5,0) {Sliding New Nodes};
+        \draw[red, thick] (15,0) -- (15.5,0); \node[right] at (15.5,0) {Sliding Reuse};
+    \end{tikzpicture}
+    
+\end{figure}

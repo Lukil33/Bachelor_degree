@@ -1,0 +1,38 @@
+% Necessita umanizzazione
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Minimum Hitting Set in Ambito Dinamico}\label{sec:minimum_hitting_set_in_ambito_dinamico}
+
+Quando si tratta di problemi in ambito dinamico, l'istanza del problema non è conosciuta a priori, come visto nel precedente contesto statico, ma la struttura si evolve nel tempo attraverso modifiche apportate all'insieme degli iperarchi che compongono l'ipergrafo.
+All'interno di tali scenari, la possibilità di un ricalcolo completo del Minimum Hitting Set (MHS) a seguito di ogni aggiornamento risulta essere computazionalmente proibitivo; l'architettura del sistema ci impone dunque di adottare strategie differenti.
+L'obiettivo degli algoritmi dinamici risulta quindi quello di riuscire a mantenere una soluzione valida durante l'intera esistenza del sistema, avendo però la possibilità di aggiornare tale soluzione ogni qualvolta avvenga una modifica alla struttura dell'ipergrafo, cercando al contempo di evitare un ricalcolo completo del Minimum Hitting Set (MHS).
+La letteratura scientifica relativa a tali problemi può essere suddivisa in tre filoni principali: approcci basati su ricerca locale, approcci basati su strutture dati ausiliarie e approcci con garanzie di approssimazione~\cite{agarwal2020}.
+
+\subsection*{Algoritmi di ricerca locale}
+
+Gli algoritmi di ricerca locale affrontano il problema mantenendo una soluzione corrente e applicando, ad ogni aggiornamento dell'ipergrafo, il minimo numero di modifiche locali necessarie a ripristinare la validità e la minimalità dell'hitting set.
+Il loro obiettivo rimane dunque quello di mantenere una soluzione più vicina possibile a quella ottimale senza però dover procedere a una ristrutturazione globale dell'istanza.
+Uno dei principi fondanti di questa classe di algoritmi è la gestione differenziata delle operazioni di \textit{inserimento} e di \textit{cancellazione} di un iperarco $I$, in quanto per ciascuna operazione è necessario apportare in modo distinto delle modifiche all'hitting set precedentemente selezionato.
+Gli approcci si distinguono per la semplicità implementativa e per il basso costo per operazione nei casi medi, sebbene spesso presentino solo garanzie di complessità \textit{ammortizzate} piuttosto che \textit{worst-case}.
+
+\subsection*{Algoritmi basati su strutture dati ausiliarie}
+
+Un secondo filone di ricerca sfrutta strutture dati ausiliarie per tenere traccia in modo efficiente delle dipendenze tra vertici e iperarchi, riducendo il costo degli aggiornamenti.
+L'idea di fondo consiste nell'associare a ciascun iperarco un'informazione di copertura, ad esempio il numero di vertici della soluzione corrente che lo intersecano, e a ciascun vertice della soluzione gli iperarchi per i quali esso risulta indispensabile, ovvero quelli non coperti da alcun altro elemento della soluzione.
+Mantenere queste informazioni aggiornate permette di localizzare rapidamente le porzioni della soluzione da modificare a seguito di un inserimento o di una cancellazione, evitando una scansione completa dell'istanza ad ogni operazione.
+Un approccio diverso, che agisce direttamente sull'ipergrafo duale, consiste nell'indicizzare i trasversali minimali e propagare su di essi gli aggiornamenti in modo incrementale, sfruttando la corrispondenza tra Minimum Hitting Set (MHS) e ipergrafo duale~\cite{murakami2011}.
+Tali soluzioni, nonostante siano tra le migliori dal punto di vista della precisione e dell'efficienza computazionale, presentano serie limitazioni dal punto di vista dell'overhead di memoria richiesto dalle strutture ausiliarie, che cresce con la dimensione e la densità dell'ipergrafo.
+
+\subsection*{Algoritmi con garanzie di approssimazione}
+
+Il terzo filone rinuncia infine alla minimalità esatta in favore di soluzioni approssimate, ottenendo in cambio migliori garanzie asintotiche all'interno dei modelli \emph{completamente dinamici}, ovvero in presenza allo stesso tempo sia di inserimenti sia di cancellazioni.
+In questo quadro si inseriscono gli algoritmi per Minimum Hitting Set (MHS) dinamico con fattore di approssimazione $O(\log n)$, analoghi ai risultati noti per il problema del Set Cover dinamico~\cite{agarwal2020}.
+L'approccio generale consiste nel tollerare una soluzione di dimensione superiore all'ottimo di un fattore logaritmico, garantendo però che ogni aggiornamento venga gestito tramite ammortizzazione in tempo polinomiale.
+Queste tipologie di soluzioni risultano particolarmente rilevanti quando la dimensione dell'ipergrafo è elevata e la minimalità stretta della soluzione è sacrificabile in favore dell'efficienza computazionale, come spesso accade nei sistemi reali in cui l'efficienza può essere considerata più importante di una soluzione cardinalmente ottima.
+Tuttavia, per tutte le applicazioni nelle quali la qualità della soluzione è il requisito primario, gli approcci approssimati risultano insufficienti e inadatti.
+
+\subsection*{Considerazioni finali}
+
+Gli algoritmi dinamici descritti presentano però un limite intrinseco: operano su un ipergrafo il cui stato corrente è sempre interamente disponibile.
+In numerose applicazioni reali, tuttavia, gli aggiornamenti arrivano in sequenza e le decisioni devono essere prese \emph{irrevocabilmente} al momento della ricezione, senza conoscenza degli eventi futuri.

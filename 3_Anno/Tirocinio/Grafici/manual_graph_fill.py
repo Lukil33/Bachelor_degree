@@ -86,9 +86,6 @@ def genera_grafico_dataset(nome_dataset, data_type, path_type, title, dati_algor
     ax.set_title(f'{title} - {nome_dataset}', fontsize=14, fontweight='bold', pad=25)
     ax.set_xticks(x)
     ax.set_xticklabels(labels_input)
-    
-    # Legenda esterna pulita ed elegante
-    ax.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), frameon=True, shadow=True, fontsize=10)
 
     plt.tight_layout()
     

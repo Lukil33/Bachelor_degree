@@ -1,0 +1,33 @@
+1. Introduzione - 4 pag
+
+1.1 Contesto
+1.2 Definizione del problema
+1.3 Grafi e ipergrafi
+1.4 Ipergrafi temporali
+
+2. Stato dell'arte e lavori correlati - 5 pag
+
+2.1 Il problema dell'Hitting Set
+    2.1.1 Definizione formale e varianti
+    2.1.2 Complessità computazionale
+2.2 Minimal Hitting Set in Ambito Statico
+2.3 Minimal Hitting Set in Ambito Dinamico
+2.4 Minimal Hitting Set in Ambito Online
+
+3. Definizione del problema e approccio proposto - 7 pag
+
+3.1 Definizione formale del problema
+3.2 Soluzione proposta
+3.3 Descrizione dell'algoritmo
+3.4 Considerazioni sulla complessità
+
+4. Valutazioni sperimentali - 10 pag
+
+4.1 Configurazione e ambiente di test
+4.2 Istanze di benchmark e caratterizzazione dei dati
+4.3 Analisi delle prestazioni computazionali
+4.4 Analisi critica e trade-off
+
+5. Conclusioni e sviluppi futuri - 1 pag
+
+5.1 Sviluppi futuri

@@ -1,0 +1,42 @@
+% Revisione Ready
+% Grammatica Ready
+% Citazioni Ready
+
+\section{Minimum Hitting Set in Ambito Statico}\label{sec:minimum_hitting_set_in_ambito_statico}
+
+Nel contesto statico l'istanza del problema è conosciuta a priori nella sua interezza e non varia nel tempo.
+Gli algoritmi lavorano quindi all'interno di un'istanza immutabile e hanno il solo scopo di calcolare il Minimum Hitting Set (MHS), o di avvicinarsi quanto più possibile alla soluzione ottimale.
+La letteratura scientifica legata all'ambito statico si è sviluppata lungo tre filoni principali: gli algoritmi esatti, il calcolo delle euristiche di ottimizzazione e infine gli algoritmi parametrizzati~\cite{moreno2013,johnson1974,downey2013}.
+
+\subsection*{Algoritmi esatti}
+
+Il filone degli algoritmi esatti comprende tutte le soluzioni in grado di fornire sempre una soluzione ottimale al problema.
+Tale capacità di risoluzione comporta tuttavia un aumento nel costo computazionale necessario al calcolo della soluzione, che nella maggior parte delle applicazioni reali risulta proibitivo.
+Gli approcci algoritmici più utilizzati all'interno di questo filone sono gli algoritmi basati su branch-and-bound e sulle tecniche di dualizzazione degli ipergrafi~\cite{murakami2011}.
+Tali algoritmi consistono nell'esplorare sistematicamente le soluzioni eliminando tutte le configurazioni che non possono portare a risultati migliori, finoa determinare il Minimum Hitting Set (MHS)~\cite{blasius2022}.
+Linee di ricerca più recenti consistono nel formulare il problema come un'istanza di soddisfacibilità booleana (SAT) o di programmazione lineare intera (ILP).
+In queste formulazioni, a ciascun elemento dell'universo viene associata una variabile decisionale, mentre opportuni vincoli garantiscono che ogni insieme sia colpito da almeno un elemento selezionato.
+Uno degli approcci più rilevanti in questo contesto introduce il paradigma dell'\textit{Implicit Hitting Set}, introdotto da Moreno-Centeno e Karp~\cite{moreno2013}, attraverso il quale la costruzione della soluzione avviene iterativamente combinando la generazione di candidati con la verifica dei vincoli.
+
+\subsection*{Euristiche e algoritmi approssimati}
+
+Gli algoritmi euristici e approssimati permettono di superare i limiti computazionali posti dagli approcci esatti a discapito della precisione della soluzione fornita.
+La natura NP-Hard del problema dell'Hitting Set~\cite{karp1972}, ha portato una parte significativa della letteratura a concentrarsi sullo sviluppo di algoritmi capaci di produrre soluzioni di buona qualità e non più ottime in tempi inferiori rispetto agli approcci esatti.
+Tra gli approcci più diffusi vi sono gli algoritmi greedy, originariamente studiati nel contesto del Set Cover Problem da Johnson~\cite{johnson1974} e successivamente analizzati da Chvátal~\cite{chvatal1979}.
+Tali implementazioni greedy possono essere classificate in due famiglie principali: le euristiche \textit{vertex-oriented} e le euristiche \textit{hyperedge-oriented}; tali famiglie si distinguono in base alla tipologia di scelta greedy effettuata, da una parte si privilegia il contributo globale alla copertura, mentre dall'altra si privilegia una scelta locale in base all'iperarco analizzato.
+Tuttavia, sebbene gli algoritmi greedy siano efficienti, la soluzione ottenuta non sempre soddisfa i criteri di minimalità per inclusione richiesti dal Minimum Hitting Set (MHS).
+Per ovviare a questo limite, vengono spesso applicate procedure di post-processing volte a eliminare gli elementi ridondanti della soluzione.
+Oltre agli algoritmi greedy e alle procedure di post-processing, la letteratura ha proposto anche approcci metaeuristici basati dunque su algoritmi evolutivi e su tecniche di ricerca locale, i quali sono stati particolarmente impiegati in applicazioni di grandi dimensioni.
+Tuttavia, tali metodologie non forniscono garanzie teoriche sulla qualità della soluzione e vengono valutate prevalentemente attraverso analisi sperimentali.
+
+\subsection*{Algoritmi parametrizzati}
+
+L'utilizzo di algoritmi parametrizzati infine permette di raggiungere una soluzione ottimale al problema in tempi computazionalmente accettabili limitando però la generalità dell'algoritmo risolutivo.
+Tale filone algoritmico si specializza infatti nell'analisi del problema basandosi su assunzioni riguardo a parametri specifici dell'istanza, quali la cardinalità della soluzione cercata o la dimensione massima degli insiemi.
+Queste assunzioni permettono di abbattere i costi computazionali delle soluzioni fornite, precludendo tuttavia una risoluzione generale del problema.
+In presenza di parametri sufficientemente piccoli, tali tecniche consentono di ottenere algoritmi Fixed-Parameter Tractable (FPT)~\cite{downey2013}, rendendo risolvibili in tempi pratici alcune classi di istanze altrimenti proibitive.
+
+\subsection*{Considerazioni finali}
+
+Gli approcci presentati assumono che l'istanza del problema sia nota e immutabile, un'ipotesi spesso irrealistica all'interno degli scenari reali.
+Questa limitazione motiva lo studio del problema in contesto dinamico, nel quale insiemi e universo possono variare nel tempo.
